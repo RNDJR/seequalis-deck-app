@@ -779,7 +779,7 @@
   // ════════════════════════════════════════════
   async function buildPdfBlob() {
     const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1040, 600]  // taille exacte de tes slides });
+    const pdf = new jsPDF({orientation: 'landscape', unit: 'px', format: [1040, 600]}); // taille exacte de tes slides
 
     const PW = 297;
     const PH = 210;
