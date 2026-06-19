@@ -1,0 +1,834 @@
+<!-- ════════════════════════════════════════════════════════════
+     ASSEMBLEUR DE DECKS — SEEQUALIS
+     Site : https://helpline.sharepoint.com/sites/SeequalisDemonstrateur
+     Bibliothèques : TemplatesDeck (lecture) / DecksGeneres (écriture)
+     À coller dans un WebPart "Éditeur de code" / "Intégrer" sur une page SharePoint moderne
+════════════════════════════════════════════════════════════ -->
+<div id="sq-deck-app"></div>
+
+<style>
+  #sq-deck-app {
+    --org: #FF6700;
+    --aub: #270026;
+    --teal: #1d6b74;
+    --panel: #16213e;
+    --panel2: #0f1a30;
+    --border: #2a2a4a;
+    --text: #1a1a1a;
+    --muted: #6677aa;
+    font-family: 'Segoe UI', 'DM Sans', Arial, sans-serif;
+    color: var(--text);
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  #sq-deck-app * { box-sizing: border-box; }
+
+  /* ── HEADER APP ── */
+  .sq-header {
+    background: var(--aub);
+    border-radius: 8px 8px 0 0;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .sq-header-left { display: flex; align-items: center; gap: 12px; }
+
+  .sq-logo-bar { display: flex; gap: 0; }
+  .sq-logo-seg1 { width: 16px; height: 3px; background: var(--aub); border: 1px solid rgba(255,255,255,0.3); }
+  .sq-logo-seg2 { width: 16px; height: 3px; background: var(--org); }
+
+  .sq-title {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+  }
+  .sq-title strong { color: var(--org); }
+
+  .sq-header-actions { display: flex; gap: 8px; }
+
+  /* ── LAYOUT ── */
+  .sq-main {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 0;
+    background: #0e0e14;
+    border-radius: 0 0 8px 8px;
+    min-height: 560px;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sq-sidebar {
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 720px;
+    overflow-y: auto;
+  }
+
+  .sq-sidebar-title {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--org);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Galerie de templates */
+  .sq-template-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .sq-template-card {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .sq-template-card:hover { border-color: var(--org); background: rgba(255,103,0,0.06); }
+  .sq-template-card.loading { opacity: 0.5; pointer-events: none; }
+
+  .sq-template-icon {
+    width: 30px; height: 30px;
+    border-radius: 5px;
+    background: var(--aub);
+    color: var(--org);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .sq-template-name {
+    font-size: 12px;
+    color: #e0e0f0;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sq-template-add {
+    font-size: 16px;
+    color: var(--org);
+    flex-shrink: 0;
+  }
+
+  .sq-empty-templates {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    padding: 20px 10px;
+    line-height: 1.6;
+  }
+
+  /* Stat deck */
+  .sq-deck-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--panel2);
+    border-radius: 6px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+  }
+  .sq-stat-label {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .sq-stat-count {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--org);
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Boutons */
+  .sq-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border: none;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: background 0.15s, opacity 0.15s;
+    width: 100%;
+    text-transform: uppercase;
+  }
+  .sq-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .sq-btn-primary { background: var(--org); color: #fff; }
+  .sq-btn-primary:hover:not(:disabled) { background: #e05500; }
+  .sq-btn-teal { background: var(--teal); color: #fff; }
+  .sq-btn-teal:hover:not(:disabled) { background: #155258; }
+  .sq-btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .sq-btn-ghost:hover:not(:disabled) { border-color: var(--org); color: #fff; }
+  .sq-btn-sm { width: auto; padding: 7px 14px; font-size: 11px; }
+
+  .sq-hint {
+    font-size: 10.5px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── CANVAS ── */
+  .sq-canvas {
+    padding: 22px;
+    overflow-y: auto;
+    max-height: 720px;
+  }
+
+  .sq-canvas-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .sq-canvas-title {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .sq-canvas-meta {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    color: var(--muted);
+  }
+
+  .sq-slides-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+
+  .sq-slide-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    overflow: hidden;
+    cursor: grab;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    position: relative;
+    user-select: none;
+  }
+  .sq-slide-card:hover { border-color: rgba(255,103,0,0.4); box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+  .sq-slide-card.dragging { opacity: 0.4; }
+  .sq-slide-card.drag-target { border-color: var(--org); border-style: dashed; }
+
+  .sq-slide-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+    background: #111;
+  }
+
+  .sq-slide-footer {
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .sq-slide-info { display: flex; align-items: center; gap: 7px; min-width: 0; }
+
+  .sq-slide-idx {
+    background: var(--aub);
+    color: var(--org);
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 5px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .sq-slide-name {
+    font-size: 10.5px;
+    color: #e0e0f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sq-slide-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .sq-icon-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 4px;
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .sq-icon-btn:hover { border-color: var(--org); color: var(--org); }
+  .sq-icon-btn.danger:hover { border-color: #ff6b6b; color: #ff6b6b; }
+
+  .sq-empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 56px 24px;
+    color: var(--muted);
+  }
+  .sq-empty-icon { font-size: 40px; margin-bottom: 14px; opacity: 0.4; }
+  .sq-empty-text { font-size: 12.5px; line-height: 1.6; }
+
+  /* Toast */
+  .sq-toast {
+    position: fixed;
+    bottom: 22px; right: 22px;
+    background: var(--aub);
+    border: 1px solid var(--org);
+    color: #fff;
+    padding: 11px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s, transform 0.25s;
+    pointer-events: none;
+    z-index: 99999;
+    max-width: 320px;
+  }
+  .sq-toast.show { opacity: 1; transform: translateY(0); }
+
+  /* Overlay progress */
+  .sq-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99998;
+  }
+  .sq-overlay.active { display: flex; }
+  .sq-overlay-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 26px 32px;
+    text-align: center;
+    min-width: 300px;
+  }
+  .sq-overlay-title {
+    font-family: 'Courier New', monospace;
+    font-size: 10.5px;
+    color: var(--org);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .sq-progress-bar-wrap {
+    background: var(--panel2);
+    border-radius: 4px;
+    height: 6px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .sq-progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--aub), var(--org));
+    width: 0%;
+    transition: width 0.3s;
+  }
+  .sq-progress-label {
+    font-size: 10.5px;
+    color: var(--muted);
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Modal nom de fichier */
+  .sq-modal-box input[type="text"] {
+    width: 100%;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: #fff;
+    font-size: 13px;
+    padding: 9px 12px;
+    margin: 14px 0 18px;
+    outline: none;
+  }
+  .sq-modal-box input[type="text"]:focus { border-color: var(--org); }
+  .sq-modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+</style>
+
+<div id="sq-deck-app">
+  <div class="sq-header">
+    <div class="sq-header-left">
+      <div class="sq-logo-bar"><div class="sq-logo-seg1"></div><div class="sq-logo-seg2"></div></div>
+      <div class="sq-title"><strong>Seequalis</strong> · Assembleur de deck</div>
+    </div>
+    <div class="sq-header-actions">
+      <button class="sq-btn sq-btn-ghost sq-btn-sm" onclick="sqClearDeck()">🗑 Vider</button>
+      <button class="sq-btn sq-btn-primary sq-btn-sm" id="sq-btn-save" onclick="sqOpenSaveModal()" disabled>☁ Enregistrer dans SharePoint</button>
+      <button class="sq-btn sq-btn-teal sq-btn-sm" id="sq-btn-pdf" onclick="sqGenerateDeck()" disabled>⬇ Télécharger PDF</button>
+    </div>
+  </div>
+
+  <div class="sq-main">
+    <!-- SIDEBAR -->
+    <div class="sq-sidebar">
+      <div>
+        <div class="sq-sidebar-title">Templates disponibles</div>
+        <div class="sq-template-list" id="sq-template-list">
+          <div class="sq-empty-templates">Chargement des templates…</div>
+        </div>
+      </div>
+
+      <div class="sq-deck-stat">
+        <div class="sq-stat-label">Slides dans le deck</div>
+        <div class="sq-stat-count" id="sq-slide-count">0</div>
+      </div>
+
+      <div class="sq-hint">
+        Cliquez sur un template pour l'ajouter au deck. Glissez les cartes à droite pour réordonner.
+      </div>
+    </div>
+
+    <!-- CANVAS -->
+    <div class="sq-canvas">
+      <div class="sq-canvas-header">
+        <div class="sq-canvas-title">Ordre des slides</div>
+        <div class="sq-canvas-meta" id="sq-canvas-meta"></div>
+      </div>
+      <div class="sq-slides-grid" id="sq-slides-grid">
+        <div class="sq-empty-state">
+          <div class="sq-empty-icon">🗂</div>
+          <div class="sq-empty-text">Aucun slide dans le deck.<br>Cliquez sur un template à gauche pour commencer.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay progress -->
+<div class="sq-overlay" id="sq-overlay">
+  <div class="sq-overlay-box">
+    <div class="sq-overlay-title" id="sq-overlay-title">Traitement en cours…</div>
+    <div class="sq-progress-bar-wrap"><div class="sq-progress-fill" id="sq-progress-fill"></div></div>
+    <div class="sq-progress-label" id="sq-progress-label">Initialisation…</div>
+  </div>
+</div>
+
+<!-- Modal nom fichier -->
+<div class="sq-overlay" id="sq-modal-save">
+  <div class="sq-overlay-box sq-modal-box">
+    <div class="sq-overlay-title">Nom du fichier à enregistrer</div>
+    <input type="text" id="sq-filename-input" placeholder="ex. deck_CACEIS_kickoff">
+    <div class="sq-modal-actions">
+      <button class="sq-btn sq-btn-ghost sq-btn-sm" onclick="sqCloseSaveModal()">Annuler</button>
+      <button class="sq-btn sq-btn-primary sq-btn-sm" onclick="sqConfirmSave()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="sq-toast" id="sq-toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  // ════════════════════════════════════════════
+  // CONFIGURATION — adapter si besoin
+  // ════════════════════════════════════════════
+  const SITE_URL       = 'https://helpline.sharepoint.com/sites/SeequalisDemonstrateur';
+  const LIB_TEMPLATES  = 'TemplatesDeck';   // nom interne de la bibliothèque (issu de l'URL)
+  const LIB_DECKS      = 'DecksGeneres';    // idem
+
+  // ════════════════════════════════════════════
+  // ÉTAT
+  // ════════════════════════════════════════════
+  let deck = [];          // [{id, title, img}]
+  let dragSrcIdx = null;
+  let lastPdfBlob = null; // dernier PDF généré, pour la sauvegarde SharePoint
+
+  // ════════════════════════════════════════════
+  // UTILS — REST API SharePoint
+  // ════════════════════════════════════════════
+  function getRequestDigest() {
+    return fetch(SITE_URL + "/_api/contextinfo", {
+      method: 'POST',
+      headers: { 'Accept': 'application/json;odata=verbose' },
+      credentials: 'same-origin',
+    })
+      .then(r => r.json())
+      .then(data => data.d.GetContextWebInformation.FormDigestValue);
+  }
+
+  // ════════════════════════════════════════════
+  // CHARGER LA LISTE DES TEMPLATES
+  // ════════════════════════════════════════════
+  function loadTemplates() {
+    const listUrl = SITE_URL + "/_api/web/lists/getbytitle('" + LIB_TEMPLATES + "')/items" +
+      "?$select=FileLeafRef,FileRef&$filter=substringof('.html',FileLeafRef)";
+
+    fetch(listUrl, {
+      headers: { 'Accept': 'application/json;odata=verbose' },
+      credentials: 'same-origin',
+    })
+      .then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(data => {
+        const items = data.d.results;
+        renderTemplateList(items);
+      })
+      .catch(err => {
+        console.error('Erreur chargement templates:', err);
+        document.getElementById('sq-template-list').innerHTML =
+          '<div class="sq-empty-templates">⚠ Impossible de charger les templates.<br>Vérifiez que la bibliothèque "' + LIB_TEMPLATES + '" existe et contient des fichiers .html.</div>';
+      });
+  }
+
+  function renderTemplateList(items) {
+    const container = document.getElementById('sq-template-list');
+    if (!items || items.length === 0) {
+      container.innerHTML = '<div class="sq-empty-templates">Aucun template trouvé dans "' + LIB_TEMPLATES + '".</div>';
+      return;
+    }
+    container.innerHTML = '';
+    items.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'sq-template-card';
+      const label = item.FileLeafRef.replace('.html', '').replace(/[_-]/g, ' ');
+      card.innerHTML = `
+        <div class="sq-template-icon">${label.charAt(0).toUpperCase()}</div>
+        <div class="sq-template-name">${label}</div>
+        <div class="sq-template-add">＋</div>
+      `;
+      card.addEventListener('click', () => addTemplateToDeck(item.FileRef, label, card));
+      container.appendChild(card);
+    });
+  }
+
+  // ════════════════════════════════════════════
+  // AJOUTER UN TEMPLATE AU DECK (fetch + render iframe + capture)
+  // ════════════════════════════════════════════
+  function addTemplateToDeck(fileRef, label, cardEl) {
+    cardEl.classList.add('loading');
+    const fullUrl = fileRef.startsWith('http') ? fileRef : (SITE_URL.split('/sites/')[0] + fileRef);
+
+    fetch(fullUrl, { credentials: 'same-origin' })
+      .then(r => r.text())
+      .then(html => {
+        const iframe = document.createElement('iframe');
+        iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:1040px;height:600px;border:none;visibility:hidden;';
+        document.body.appendChild(iframe);
+
+        return new Promise(resolve => {
+          iframe.onload = () => setTimeout(resolve, 700); // laisse le temps aux fonts/CSS de charger
+          iframe.srcdoc = html;
+        }).then(() => iframe);
+      })
+      .then(iframe => {
+        const slideEl = iframe.contentDocument.getElementById('slide');
+        if (!slideEl) {
+          iframe.remove();
+          toast('Élément #slide introuvable dans ce template', true);
+          cardEl.classList.remove('loading');
+          return;
+        }
+        return html2canvas(slideEl, {
+          scale: 2, useCORS: true, backgroundColor: '#ffffff',
+          windowWidth: 1040, windowHeight: 600,
+        }).then(canvas => {
+          const imgData = canvas.toDataURL('image/jpeg', 0.88);
+          const titleEl = iframe.contentDocument.getElementById('s-title') ||
+                           iframe.contentDocument.getElementById('s-badge') ||
+                           iframe.contentDocument.getElementById('s-titre');
+          const title = titleEl ? titleEl.textContent.trim() : label;
+          deck.push({ id: Date.now() + Math.random(), title, img: imgData });
+          iframe.remove();
+          render();
+          toast('"' + label + '" ajouté au deck');
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        toast('Erreur lors du chargement de "' + label + '"', true);
+      })
+      .finally(() => cardEl.classList.remove('loading'));
+  }
+
+  // ════════════════════════════════════════════
+  // RENDER DECK CANVAS
+  // ════════════════════════════════════════════
+  function render() {
+    const grid  = document.getElementById('sq-slides-grid');
+    const count = document.getElementById('sq-slide-count');
+    const meta  = document.getElementById('sq-canvas-meta');
+    const btnPdf  = document.getElementById('sq-btn-pdf');
+    const btnSave = document.getElementById('sq-btn-save');
+
+    count.textContent = deck.length;
+    btnPdf.disabled  = deck.length === 0;
+    btnSave.disabled = deck.length === 0;
+    meta.textContent = deck.length > 0 ? deck.length + ' slide' + (deck.length > 1 ? 's' : '') : '';
+
+    if (deck.length === 0) {
+      grid.innerHTML = `<div class="sq-empty-state">
+        <div class="sq-empty-icon">🗂</div>
+        <div class="sq-empty-text">Aucun slide dans le deck.<br>Cliquez sur un template à gauche pour commencer.</div>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = '';
+    deck.forEach((slide, idx) => {
+      const card = document.createElement('div');
+      card.className = 'sq-slide-card';
+      card.draggable = true;
+      card.dataset.idx = idx;
+
+      card.innerHTML = `
+        <img class="sq-slide-thumb" src="${slide.img}" alt="${slide.title}">
+        <div class="sq-slide-footer">
+          <div class="sq-slide-info">
+            <span class="sq-slide-idx">${String(idx + 1).padStart(2, '0')}</span>
+            <span class="sq-slide-name">${slide.title}</span>
+          </div>
+          <div class="sq-slide-actions">
+            <button class="sq-icon-btn" title="Monter">↑</button>
+            <button class="sq-icon-btn" title="Descendre">↓</button>
+            <button class="sq-icon-btn danger" title="Supprimer">✕</button>
+          </div>
+        </div>`;
+
+      const [upBtn, downBtn, delBtn] = card.querySelectorAll('.sq-icon-btn');
+      upBtn.addEventListener('click', () => moveSlide(idx, -1));
+      downBtn.addEventListener('click', () => moveSlide(idx, 1));
+      delBtn.addEventListener('click', () => removeSlide(idx));
+
+      card.addEventListener('dragstart', e => {
+        dragSrcIdx = idx;
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        document.querySelectorAll('.drag-target').forEach(el => el.classList.remove('drag-target'));
+      });
+      card.addEventListener('dragover', e => {
+        e.preventDefault();
+        card.classList.add('drag-target');
+      });
+      card.addEventListener('dragleave', () => card.classList.remove('drag-target'));
+      card.addEventListener('drop', e => {
+        e.preventDefault();
+        card.classList.remove('drag-target');
+        if (dragSrcIdx === null || dragSrcIdx === idx) return;
+        const moved = deck.splice(dragSrcIdx, 1)[0];
+        deck.splice(idx, 0, moved);
+        dragSrcIdx = null;
+        render();
+      });
+
+      grid.appendChild(card);
+    });
+  }
+
+  function moveSlide(idx, dir) {
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= deck.length) return;
+    [deck[idx], deck[newIdx]] = [deck[newIdx], deck[idx]];
+    render();
+  }
+
+  function removeSlide(idx) {
+    deck.splice(idx, 1);
+    render();
+    toast('Slide retiré du deck');
+  }
+
+  window.sqClearDeck = function() {
+    if (deck.length === 0) return;
+    if (!confirm('Vider le deck (' + deck.length + ' slide' + (deck.length > 1 ? 's' : '') + ') ?')) return;
+    deck = [];
+    render();
+    toast('Deck vidé');
+  };
+
+  // ════════════════════════════════════════════
+  // GÉNÉRATION PDF (en mémoire — réutilisé pour download ET save SharePoint)
+  // ════════════════════════════════════════════
+  async function buildPdfBlob() {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const PW = 297, PH = 210;
+
+    const fill  = document.getElementById('sq-progress-fill');
+    const label = document.getElementById('sq-progress-label');
+
+    for (let i = 0; i < deck.length; i++) {
+      const slide = deck[i];
+      const pct = Math.round((i / deck.length) * 100);
+      fill.style.width = pct + '%';
+      label.textContent = 'Slide ' + (i + 1) + ' / ' + deck.length + ' — ' + slide.title;
+
+      if (i > 0) pdf.addPage('a4', 'landscape');
+
+      const img = new Image();
+      img.src = slide.img;
+      await new Promise(r => { img.onload = r; });
+
+      const imgRatio = img.width / img.height;
+      const pageRatio = PW / PH;
+      let drawW, drawH, drawX, drawY;
+      if (imgRatio > pageRatio) {
+        drawW = PW; drawH = PW / imgRatio; drawX = 0; drawY = (PH - drawH) / 2;
+      } else {
+        drawH = PH; drawW = PH * imgRatio; drawX = (PW - drawW) / 2; drawY = 0;
+      }
+      pdf.addImage(slide.img, 'JPEG', drawX, drawY, drawW, drawH);
+    }
+
+    fill.style.width = '100%';
+    label.textContent = 'Finalisation…';
+    await new Promise(r => setTimeout(r, 250));
+
+    return pdf.output('blob');
+  }
+
+  window.sqGenerateDeck = async function() {
+    if (deck.length === 0) return;
+    const overlay = document.getElementById('sq-overlay');
+    document.getElementById('sq-overlay-title').textContent = 'Génération du PDF en cours…';
+    overlay.classList.add('active');
+    try {
+      lastPdfBlob = await buildPdfBlob();
+      const ts = new Date().toISOString().slice(0,16).replace('T','_').replace(':','h');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(lastPdfBlob);
+      a.download = 'deck_seequalis_' + ts + '.pdf';
+      a.click();
+      toast('✓ PDF téléchargé — ' + deck.length + ' slide' + (deck.length > 1 ? 's' : ''));
+    } catch(e) {
+      console.error(e);
+      toast('Erreur lors de la génération PDF', true);
+    } finally {
+      overlay.classList.remove('active');
+      document.getElementById('sq-progress-fill').style.width = '0%';
+    }
+  };
+
+  // ════════════════════════════════════════════
+  // MODAL NOM DE FICHIER + SAUVEGARDE SHAREPOINT
+  // ════════════════════════════════════════════
+  window.sqOpenSaveModal = function() {
+    if (deck.length === 0) return;
+    document.getElementById('sq-filename-input').value = '';
+    document.getElementById('sq-modal-save').classList.add('active');
+    setTimeout(() => document.getElementById('sq-filename-input').focus(), 100);
+  };
+
+  window.sqCloseSaveModal = function() {
+    document.getElementById('sq-modal-save').classList.remove('active');
+  };
+
+  window.sqConfirmSave = async function() {
+    let filename = document.getElementById('sq-filename-input').value.trim();
+    if (!filename) { toast('Merci de saisir un nom de fichier', true); return; }
+    filename = filename.replace(/[^a-zA-Z0-9_\-]/g, '_');
+    if (!filename.toLowerCase().endsWith('.pdf')) filename += '.pdf';
+
+    sqCloseSaveModal();
+
+    const overlay = document.getElementById('sq-overlay');
+    document.getElementById('sq-overlay-title').textContent = 'Enregistrement dans SharePoint…';
+    document.getElementById('sq-progress-label').textContent = 'Génération du PDF…';
+    overlay.classList.add('active');
+
+    try {
+      const blob = await buildPdfBlob();
+      document.getElementById('sq-progress-label').textContent = 'Envoi vers ' + LIB_DECKS + '…';
+
+      const digest = await getRequestDigest();
+      const uploadUrl = SITE_URL + "/_api/web/lists/getbytitle('" + LIB_DECKS + "')/RootFolder/Files/Add(url='" +
+        encodeURIComponent(filename) + "',overwrite=true)";
+
+      const arrayBuffer = await blob.arrayBuffer();
+
+      const res = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json;odata=verbose',
+          'X-RequestDigest': digest,
+          'Content-Type': 'application/pdf',
+        },
+        credentials: 'same-origin',
+        body: arrayBuffer,
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error('HTTP ' + res.status + ' — ' + errText.slice(0, 200));
+      }
+
+      toast('✓ Enregistré dans SharePoint : ' + filename);
+    } catch (e) {
+      console.error(e);
+      toast('⚠ Échec de l\'enregistrement SharePoint. Vérifiez vos droits sur "' + LIB_DECKS + '".', true);
+    } finally {
+      overlay.classList.remove('active');
+      document.getElementById('sq-progress-fill').style.width = '0%';
+    }
+  };
+
+  // ════════════════════════════════════════════
+  // TOAST
+  // ════════════════════════════════════════════
+  let toastTimer;
+  function toast(msg, isError) {
+    const el = document.getElementById('sq-toast');
+    el.textContent = msg;
+    el.style.borderColor = isError ? '#ff6b6b' : 'var(--org)';
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+  }
+
+  // ════════════════════════════════════════════
+  // INIT
+  // ════════════════════════════════════════════
+  loadTemplates();
+  render();
+
+})();
+</script>
