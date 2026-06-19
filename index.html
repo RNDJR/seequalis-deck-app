@@ -1,12 +1,20 @@
-<!-- ════════════════════════════════════════════════════════════
-     ASSEMBLEUR DE DECKS — SEEQUALIS
-     Site : https://helpline.sharepoint.com/sites/SeequalisDemonstrateur
-     Bibliothèques : TemplatesDeck (lecture) / DecksGeneres (écriture)
-     À coller dans un WebPart "Éditeur de code" / "Intégrer" sur une page SharePoint moderne
-════════════════════════════════════════════════════════════ -->
-<div id="sq-deck-app"></div>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Seequalis — Assembleur de deck</title>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
 <style>
+  body {
+    margin: 0;
+    padding: 24px;
+    background: #0e0e14;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
   #sq-deck-app {
     --org: #FF6700;
     --aub: #270026;
@@ -50,6 +58,7 @@
     text-transform: uppercase;
     color: rgba(255,255,255,0.75);
   }
+
   .sq-title strong { color: var(--org); }
 
   .sq-header-actions { display: flex; gap: 8px; }
@@ -102,6 +111,7 @@
     cursor: pointer;
     transition: border-color 0.15s, background 0.15s;
   }
+
   .sq-template-card:hover { border-color: var(--org); background: rgba(255,103,0,0.06); }
   .sq-template-card.loading { opacity: 0.5; pointer-events: none; }
 
@@ -150,6 +160,7 @@
     padding: 10px 14px;
     border: 1px solid var(--border);
   }
+
   .sq-stat-label {
     font-family: 'Courier New', monospace;
     font-size: 9px;
@@ -157,6 +168,7 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
   }
+
   .sq-stat-count {
     font-size: 20px;
     font-weight: 700;
@@ -182,6 +194,7 @@
     width: 100%;
     text-transform: uppercase;
   }
+
   .sq-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .sq-btn-primary { background: var(--org); color: #fff; }
   .sq-btn-primary:hover:not(:disabled) { background: #e05500; }
@@ -210,6 +223,7 @@
     justify-content: space-between;
     margin-bottom: 16px;
   }
+
   .sq-canvas-title {
     font-family: 'Courier New', monospace;
     font-size: 9px;
@@ -217,6 +231,7 @@
     text-transform: uppercase;
     color: var(--muted);
   }
+
   .sq-canvas-meta {
     font-family: 'Courier New', monospace;
     font-size: 9px;
@@ -239,6 +254,7 @@
     position: relative;
     user-select: none;
   }
+
   .sq-slide-card:hover { border-color: rgba(255,103,0,0.4); box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
   .sq-slide-card.dragging { opacity: 0.4; }
   .sq-slide-card.drag-target { border-color: var(--org); border-style: dashed; }
@@ -271,6 +287,7 @@
     border-radius: 3px;
     flex-shrink: 0;
   }
+
   .sq-slide-name {
     font-size: 10.5px;
     color: #e0e0f0;
@@ -280,6 +297,7 @@
   }
 
   .sq-slide-actions { display: flex; gap: 4px; flex-shrink: 0; }
+
   .sq-icon-btn {
     background: none;
     border: 1px solid var(--border);
@@ -292,6 +310,7 @@
     transition: all 0.15s;
     flex-shrink: 0;
   }
+
   .sq-icon-btn:hover { border-color: var(--org); color: var(--org); }
   .sq-icon-btn.danger:hover { border-color: #ff6b6b; color: #ff6b6b; }
 
@@ -301,6 +320,7 @@
     padding: 56px 24px;
     color: var(--muted);
   }
+
   .sq-empty-icon { font-size: 40px; margin-bottom: 14px; opacity: 0.4; }
   .sq-empty-text { font-size: 12.5px; line-height: 1.6; }
 
@@ -322,6 +342,7 @@
     z-index: 99999;
     max-width: 320px;
   }
+
   .sq-toast.show { opacity: 1; transform: translateY(0); }
 
   /* Overlay progress */
@@ -334,7 +355,9 @@
     justify-content: center;
     z-index: 99998;
   }
+
   .sq-overlay.active { display: flex; }
+
   .sq-overlay-box {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -343,6 +366,7 @@
     text-align: center;
     min-width: 300px;
   }
+
   .sq-overlay-title {
     font-family: 'Courier New', monospace;
     font-size: 10.5px;
@@ -351,6 +375,7 @@
     letter-spacing: 0.1em;
     margin-bottom: 12px;
   }
+
   .sq-progress-bar-wrap {
     background: var(--panel2);
     border-radius: 4px;
@@ -358,12 +383,14 @@
     overflow: hidden;
     margin-bottom: 10px;
   }
+
   .sq-progress-fill {
     height: 100%;
     background: linear-gradient(to right, var(--aub), var(--org));
     width: 0%;
     transition: width 0.3s;
   }
+
   .sq-progress-label {
     font-size: 10.5px;
     color: var(--muted);
@@ -382,19 +409,27 @@
     margin: 14px 0 18px;
     outline: none;
   }
+
   .sq-modal-box input[type="text"]:focus { border-color: var(--org); }
   .sq-modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
 </style>
+</head>
+
+<body>
 
 <div id="sq-deck-app">
   <div class="sq-header">
     <div class="sq-header-left">
-      <div class="sq-logo-bar"><div class="sq-logo-seg1"></div><div class="sq-logo-seg2"></div></div>
+      <div class="sq-logo-bar">
+        <div class="sq-logo-seg1"></div>
+        <div class="sq-logo-seg2"></div>
+      </div>
       <div class="sq-title"><strong>Seequalis</strong> · Assembleur de deck</div>
     </div>
+
     <div class="sq-header-actions">
       <button class="sq-btn sq-btn-ghost sq-btn-sm" onclick="sqClearDeck()">🗑 Vider</button>
-      <button class="sq-btn sq-btn-primary sq-btn-sm" id="sq-btn-save" onclick="sqOpenSaveModal()" disabled>☁ Enregistrer dans SharePoint</button>
+      <button class="sq-btn sq-btn-primary sq-btn-sm" id="sq-btn-save" onclick="sqOpenSaveModal()" disabled>💾 Télécharger avec nom</button>
       <button class="sq-btn sq-btn-teal sq-btn-sm" id="sq-btn-pdf" onclick="sqGenerateDeck()" disabled>⬇ Télécharger PDF</button>
     </div>
   </div>
@@ -425,6 +460,7 @@
         <div class="sq-canvas-title">Ordre des slides</div>
         <div class="sq-canvas-meta" id="sq-canvas-meta"></div>
       </div>
+
       <div class="sq-slides-grid" id="sq-slides-grid">
         <div class="sq-empty-state">
           <div class="sq-empty-icon">🗂</div>
@@ -439,7 +475,9 @@
 <div class="sq-overlay" id="sq-overlay">
   <div class="sq-overlay-box">
     <div class="sq-overlay-title" id="sq-overlay-title">Traitement en cours…</div>
-    <div class="sq-progress-bar-wrap"><div class="sq-progress-fill" id="sq-progress-fill"></div></div>
+    <div class="sq-progress-bar-wrap">
+      <div class="sq-progress-fill" id="sq-progress-fill"></div>
+    </div>
     <div class="sq-progress-label" id="sq-progress-label">Initialisation…</div>
   </div>
 </div>
@@ -447,134 +485,160 @@
 <!-- Modal nom fichier -->
 <div class="sq-overlay" id="sq-modal-save">
   <div class="sq-overlay-box sq-modal-box">
-    <div class="sq-overlay-title">Nom du fichier à enregistrer</div>
+    <div class="sq-overlay-title">Nom du fichier à télécharger</div>
     <input type="text" id="sq-filename-input" placeholder="ex. deck_CACEIS_kickoff">
+
     <div class="sq-modal-actions">
       <button class="sq-btn sq-btn-ghost sq-btn-sm" onclick="sqCloseSaveModal()">Annuler</button>
-      <button class="sq-btn sq-btn-primary sq-btn-sm" onclick="sqConfirmSave()">Enregistrer</button>
+      <button class="sq-btn sq-btn-primary sq-btn-sm" onclick="sqConfirmSave()">Télécharger</button>
     </div>
   </div>
 </div>
 
 <div class="sq-toast" id="sq-toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script>
 (function() {
   'use strict';
 
   // ════════════════════════════════════════════
-  // CONFIGURATION — adapter si besoin
+  // CONFIGURATION — GitHub Pages
   // ════════════════════════════════════════════
-  const SITE_URL       = 'https://helpline.sharepoint.com/sites/SeequalisDemonstrateur';
-  const LIB_TEMPLATES  = 'TemplatesDeck';   // nom interne de la bibliothèque (issu de l'URL)
-  const LIB_DECKS      = 'DecksGeneres';    // idem
+  // Ces chemins doivent correspondre exactement aux fichiers présents
+  // dans le dossier /templates de ton repository GitHub.
+  const TEMPLATE_FILES = [
+    {
+      label: 'Business Case',
+      fileName: 'slide_business_case.html',
+      fileRef: 'templates/slide_business_case.html'
+    },
+    {
+      label: 'Démonstrateur',
+      fileName: 'slide_demonstrateur_pdf.html',
+      fileRef: 'templates/slide_demonstrateur_pdf.html'
+    },
+    {
+      label: 'Générique',
+      fileName: 'slide_generique_pdf.html',
+      fileRef: 'templates/slide_generique_pdf.html'
+    },
+    {
+      label: 'Phase éditeur initial',
+      fileName: 'slide_phase_editeur_initial.html',
+      fileRef: 'templates/slide_phase_editeur_initial.html'
+    }
+  ];
 
   // ════════════════════════════════════════════
   // ÉTAT
   // ════════════════════════════════════════════
-  let deck = [];          // [{id, title, img}]
+  let deck = [];
   let dragSrcIdx = null;
-  let lastPdfBlob = null; // dernier PDF généré, pour la sauvegarde SharePoint
-
-  // ════════════════════════════════════════════
-  // UTILS — REST API SharePoint
-  // ════════════════════════════════════════════
-  function getRequestDigest() {
-    return fetch(SITE_URL + "/_api/contextinfo", {
-      method: 'POST',
-      headers: { 'Accept': 'application/json;odata=verbose' },
-      credentials: 'same-origin',
-    })
-      .then(r => r.json())
-      .then(data => data.d.GetContextWebInformation.FormDigestValue);
-  }
+  let lastPdfBlob = null;
 
   // ════════════════════════════════════════════
   // CHARGER LA LISTE DES TEMPLATES
   // ════════════════════════════════════════════
   function loadTemplates() {
-    const listUrl = SITE_URL + "/_api/web/lists/getbytitle('" + LIB_TEMPLATES + "')/items" +
-      "?$select=FileLeafRef,FileRef&$filter=substringof('.html',FileLeafRef)";
-
-    fetch(listUrl, {
-      headers: { 'Accept': 'application/json;odata=verbose' },
-      credentials: 'same-origin',
-    })
-      .then(r => {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
-      })
-      .then(data => {
-        const items = data.d.results;
-        renderTemplateList(items);
-      })
-      .catch(err => {
-        console.error('Erreur chargement templates:', err);
-        document.getElementById('sq-template-list').innerHTML =
-          '<div class="sq-empty-templates">⚠ Impossible de charger les templates.<br>Vérifiez que la bibliothèque "' + LIB_TEMPLATES + '" existe et contient des fichiers .html.</div>';
-      });
+    renderTemplateList(TEMPLATE_FILES);
   }
 
   function renderTemplateList(items) {
     const container = document.getElementById('sq-template-list');
+
     if (!items || items.length === 0) {
-      container.innerHTML = '<div class="sq-empty-templates">Aucun template trouvé dans "' + LIB_TEMPLATES + '".</div>';
+      container.innerHTML =
+        '<div class="sq-empty-templates">Aucun template trouvé dans le dossier GitHub <strong>templates</strong>.</div>';
       return;
     }
+
     container.innerHTML = '';
+
     items.forEach(item => {
       const card = document.createElement('div');
       card.className = 'sq-template-card';
-      const label = item.FileLeafRef.replace('.html', '').replace(/[_-]/g, ' ');
+
+      const label = item.label || item.fileName.replace('.html', '').replace(/[_-]/g, ' ');
+
       card.innerHTML = `
         <div class="sq-template-icon">${label.charAt(0).toUpperCase()}</div>
         <div class="sq-template-name">${label}</div>
         <div class="sq-template-add">＋</div>
       `;
-      card.addEventListener('click', () => addTemplateToDeck(item.FileRef, label, card));
+
+      card.addEventListener('click', () => addTemplateToDeck(item.fileRef, label, card));
       container.appendChild(card);
     });
   }
 
   // ════════════════════════════════════════════
-  // AJOUTER UN TEMPLATE AU DECK (fetch + render iframe + capture)
+  // AJOUTER UN TEMPLATE AU DECK
   // ════════════════════════════════════════════
   function addTemplateToDeck(fileRef, label, cardEl) {
     cardEl.classList.add('loading');
-    const fullUrl = fileRef.startsWith('http') ? fileRef : (SITE_URL.split('/sites/')[0] + fileRef);
 
-    fetch(fullUrl, { credentials: 'same-origin' })
-      .then(r => r.text())
+    fetch(fileRef, { cache: 'no-store' })
+      .then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status + ' sur ' + fileRef);
+        return r.text();
+      })
       .then(html => {
         const iframe = document.createElement('iframe');
-        iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:1040px;height:600px;border:none;visibility:hidden;';
+
+        iframe.style.cssText = [
+          'position:fixed',
+          'left:-9999px',
+          'top:0',
+          'width:1040px',
+          'height:720px',
+          'border:none',
+          'opacity:0',
+          'pointer-events:none',
+          'z-index:-1'
+        ].join(';');
+
         document.body.appendChild(iframe);
 
         return new Promise(resolve => {
-          iframe.onload = () => setTimeout(resolve, 700); // laisse le temps aux fonts/CSS de charger
+          iframe.onload = () => {
+            setTimeout(() => resolve(iframe), 1100);
+          };
+
           iframe.srcdoc = html;
-        }).then(() => iframe);
+        });
       })
       .then(iframe => {
         const slideEl = iframe.contentDocument.getElementById('slide');
+
         if (!slideEl) {
           iframe.remove();
-          toast('Élément #slide introuvable dans ce template', true);
-          cardEl.classList.remove('loading');
+          toast('Élément #slide introuvable dans "' + label + '"', true);
           return;
         }
+
         return html2canvas(slideEl, {
-          scale: 2, useCORS: true, backgroundColor: '#ffffff',
-          windowWidth: 1040, windowHeight: 600,
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          windowWidth: 1040,
+          windowHeight: 720
         }).then(canvas => {
           const imgData = canvas.toDataURL('image/jpeg', 0.88);
-          const titleEl = iframe.contentDocument.getElementById('s-title') ||
-                           iframe.contentDocument.getElementById('s-badge') ||
-                           iframe.contentDocument.getElementById('s-titre');
+
+          const titleEl =
+            iframe.contentDocument.getElementById('s-title') ||
+            iframe.contentDocument.getElementById('s-badge') ||
+            iframe.contentDocument.getElementById('s-titre') ||
+            iframe.contentDocument.querySelector('title');
+
           const title = titleEl ? titleEl.textContent.trim() : label;
-          deck.push({ id: Date.now() + Math.random(), title, img: imgData });
+
+          deck.push({
+            id: Date.now() + Math.random(),
+            title,
+            img: imgData
+          });
+
           iframe.remove();
           render();
           toast('"' + label + '" ajouté au deck');
@@ -584,7 +648,9 @@
         console.error(err);
         toast('Erreur lors du chargement de "' + label + '"', true);
       })
-      .finally(() => cardEl.classList.remove('loading'));
+      .finally(() => {
+        cardEl.classList.remove('loading');
+      });
   }
 
   // ════════════════════════════════════════════
@@ -600,17 +666,23 @@
     count.textContent = deck.length;
     btnPdf.disabled  = deck.length === 0;
     btnSave.disabled = deck.length === 0;
-    meta.textContent = deck.length > 0 ? deck.length + ' slide' + (deck.length > 1 ? 's' : '') : '';
+
+    meta.textContent = deck.length > 0
+      ? deck.length + ' slide' + (deck.length > 1 ? 's' : '')
+      : '';
 
     if (deck.length === 0) {
-      grid.innerHTML = `<div class="sq-empty-state">
-        <div class="sq-empty-icon">🗂</div>
-        <div class="sq-empty-text">Aucun slide dans le deck.<br>Cliquez sur un template à gauche pour commencer.</div>
-      </div>`;
+      grid.innerHTML = `
+        <div class="sq-empty-state">
+          <div class="sq-empty-icon">🗂</div>
+          <div class="sq-empty-text">Aucun slide dans le deck.<br>Cliquez sur un template à gauche pour commencer.</div>
+        </div>
+      `;
       return;
     }
 
     grid.innerHTML = '';
+
     deck.forEach((slide, idx) => {
       const card = document.createElement('div');
       card.className = 'sq-slide-card';
@@ -629,9 +701,11 @@
             <button class="sq-icon-btn" title="Descendre">↓</button>
             <button class="sq-icon-btn danger" title="Supprimer">✕</button>
           </div>
-        </div>`;
+        </div>
+      `;
 
       const [upBtn, downBtn, delBtn] = card.querySelectorAll('.sq-icon-btn');
+
       upBtn.addEventListener('click', () => moveSlide(idx, -1));
       downBtn.addEventListener('click', () => moveSlide(idx, 1));
       delBtn.addEventListener('click', () => removeSlide(idx));
@@ -641,21 +715,30 @@
         card.classList.add('dragging');
         e.dataTransfer.effectAllowed = 'move';
       });
+
       card.addEventListener('dragend', () => {
         card.classList.remove('dragging');
         document.querySelectorAll('.drag-target').forEach(el => el.classList.remove('drag-target'));
       });
+
       card.addEventListener('dragover', e => {
         e.preventDefault();
         card.classList.add('drag-target');
       });
-      card.addEventListener('dragleave', () => card.classList.remove('drag-target'));
+
+      card.addEventListener('dragleave', () => {
+        card.classList.remove('drag-target');
+      });
+
       card.addEventListener('drop', e => {
         e.preventDefault();
         card.classList.remove('drag-target');
+
         if (dragSrcIdx === null || dragSrcIdx === idx) return;
+
         const moved = deck.splice(dragSrcIdx, 1)[0];
         deck.splice(idx, 0, moved);
+
         dragSrcIdx = null;
         render();
       });
@@ -666,7 +749,9 @@
 
   function moveSlide(idx, dir) {
     const newIdx = idx + dir;
+
     if (newIdx < 0 || newIdx >= deck.length) return;
+
     [deck[idx], deck[newIdx]] = [deck[newIdx], deck[idx]];
     render();
   }
@@ -679,25 +764,32 @@
 
   window.sqClearDeck = function() {
     if (deck.length === 0) return;
-    if (!confirm('Vider le deck (' + deck.length + ' slide' + (deck.length > 1 ? 's' : '') + ') ?')) return;
+
+    if (!confirm('Vider le deck (' + deck.length + ' slide' + (deck.length > 1 ? 's' : '') + ') ?')) {
+      return;
+    }
+
     deck = [];
     render();
     toast('Deck vidé');
   };
 
   // ════════════════════════════════════════════
-  // GÉNÉRATION PDF (en mémoire — réutilisé pour download ET save SharePoint)
+  // GÉNÉRATION PDF
   // ════════════════════════════════════════════
   async function buildPdfBlob() {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-    const PW = 297, PH = 210;
+
+    const PW = 297;
+    const PH = 210;
 
     const fill  = document.getElementById('sq-progress-fill');
     const label = document.getElementById('sq-progress-label');
 
     for (let i = 0; i < deck.length; i++) {
       const slide = deck[i];
+
       const pct = Math.round((i / deck.length) * 100);
       fill.style.width = pct + '%';
       label.textContent = 'Slide ' + (i + 1) + ' / ' + deck.length + ' — ' + slide.title;
@@ -706,38 +798,64 @@
 
       const img = new Image();
       img.src = slide.img;
-      await new Promise(r => { img.onload = r; });
+
+      await new Promise(resolve => {
+        img.onload = resolve;
+      });
 
       const imgRatio = img.width / img.height;
       const pageRatio = PW / PH;
-      let drawW, drawH, drawX, drawY;
+
+      let drawW;
+      let drawH;
+      let drawX;
+      let drawY;
+
       if (imgRatio > pageRatio) {
-        drawW = PW; drawH = PW / imgRatio; drawX = 0; drawY = (PH - drawH) / 2;
+        drawW = PW;
+        drawH = PW / imgRatio;
+        drawX = 0;
+        drawY = (PH - drawH) / 2;
       } else {
-        drawH = PH; drawW = PH * imgRatio; drawX = (PW - drawW) / 2; drawY = 0;
+        drawH = PH;
+        drawW = PH * imgRatio;
+        drawX = (PW - drawW) / 2;
+        drawY = 0;
       }
+
       pdf.addImage(slide.img, 'JPEG', drawX, drawY, drawW, drawH);
     }
 
     fill.style.width = '100%';
     label.textContent = 'Finalisation…';
-    await new Promise(r => setTimeout(r, 250));
+
+    await new Promise(resolve => setTimeout(resolve, 250));
 
     return pdf.output('blob');
   }
 
   window.sqGenerateDeck = async function() {
     if (deck.length === 0) return;
+
     const overlay = document.getElementById('sq-overlay');
     document.getElementById('sq-overlay-title').textContent = 'Génération du PDF en cours…';
+
     overlay.classList.add('active');
+
     try {
       lastPdfBlob = await buildPdfBlob();
-      const ts = new Date().toISOString().slice(0,16).replace('T','_').replace(':','h');
+
+      const ts = new Date()
+        .toISOString()
+        .slice(0,16)
+        .replace('T','_')
+        .replace(':','h');
+
       const a = document.createElement('a');
       a.href = URL.createObjectURL(lastPdfBlob);
       a.download = 'deck_seequalis_' + ts + '.pdf';
       a.click();
+
       toast('✓ PDF téléchargé — ' + deck.length + ' slide' + (deck.length > 1 ? 's' : ''));
     } catch(e) {
       console.error(e);
@@ -749,13 +867,17 @@
   };
 
   // ════════════════════════════════════════════
-  // MODAL NOM DE FICHIER + SAUVEGARDE SHAREPOINT
+  // MODAL NOM DE FICHIER + TÉLÉCHARGEMENT LOCAL
   // ════════════════════════════════════════════
   window.sqOpenSaveModal = function() {
     if (deck.length === 0) return;
+
     document.getElementById('sq-filename-input').value = '';
     document.getElementById('sq-modal-save').classList.add('active');
-    setTimeout(() => document.getElementById('sq-filename-input').focus(), 100);
+
+    setTimeout(() => {
+      document.getElementById('sq-filename-input').focus();
+    }, 100);
   };
 
   window.sqCloseSaveModal = function() {
@@ -764,47 +886,38 @@
 
   window.sqConfirmSave = async function() {
     let filename = document.getElementById('sq-filename-input').value.trim();
-    if (!filename) { toast('Merci de saisir un nom de fichier', true); return; }
+
+    if (!filename) {
+      toast('Merci de saisir un nom de fichier', true);
+      return;
+    }
+
     filename = filename.replace(/[^a-zA-Z0-9_\-]/g, '_');
-    if (!filename.toLowerCase().endsWith('.pdf')) filename += '.pdf';
+
+    if (!filename.toLowerCase().endsWith('.pdf')) {
+      filename += '.pdf';
+    }
 
     sqCloseSaveModal();
 
     const overlay = document.getElementById('sq-overlay');
-    document.getElementById('sq-overlay-title').textContent = 'Enregistrement dans SharePoint…';
+    document.getElementById('sq-overlay-title').textContent = 'Préparation du téléchargement…';
     document.getElementById('sq-progress-label').textContent = 'Génération du PDF…';
+
     overlay.classList.add('active');
 
     try {
       const blob = await buildPdfBlob();
-      document.getElementById('sq-progress-label').textContent = 'Envoi vers ' + LIB_DECKS + '…';
 
-      const digest = await getRequestDigest();
-      const uploadUrl = SITE_URL + "/_api/web/lists/getbytitle('" + LIB_DECKS + "')/RootFolder/Files/Add(url='" +
-        encodeURIComponent(filename) + "',overwrite=true)";
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
 
-      const arrayBuffer = await blob.arrayBuffer();
-
-      const res = await fetch(uploadUrl, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json;odata=verbose',
-          'X-RequestDigest': digest,
-          'Content-Type': 'application/pdf',
-        },
-        credentials: 'same-origin',
-        body: arrayBuffer,
-      });
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error('HTTP ' + res.status + ' — ' + errText.slice(0, 200));
-      }
-
-      toast('✓ Enregistré dans SharePoint : ' + filename);
+      toast('✓ PDF téléchargé : ' + filename);
     } catch (e) {
       console.error(e);
-      toast('⚠ Échec de l\'enregistrement SharePoint. Vérifiez vos droits sur "' + LIB_DECKS + '".', true);
+      toast('Erreur lors du téléchargement du PDF', true);
     } finally {
       overlay.classList.remove('active');
       document.getElementById('sq-progress-fill').style.width = '0%';
@@ -815,13 +928,19 @@
   // TOAST
   // ════════════════════════════════════════════
   let toastTimer;
+
   function toast(msg, isError) {
     const el = document.getElementById('sq-toast');
+
     el.textContent = msg;
     el.style.borderColor = isError ? '#ff6b6b' : 'var(--org)';
     el.classList.add('show');
+
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+
+    toastTimer = setTimeout(() => {
+      el.classList.remove('show');
+    }, 3200);
   }
 
   // ════════════════════════════════════════════
@@ -832,3 +951,6 @@
 
 })();
 </script>
+
+</body>
+</html>
