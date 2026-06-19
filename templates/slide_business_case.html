@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Business Case — Seequalis</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --orange:         #EC671A;
+    --aubergine:      #270026;
+    --aubergine-mid:  #3d0038;
+    --aubergine-light:#5a0054;
+    --white:          #ffffff;
+    --grey-light:     #f4f4f6;
+    --grey-mid:       #e0e0e8;
+    --text-dark:      #1E1F1F;
+    --text-mid:       #555568;
+    --col-w:          30px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #111118;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 48px;
+    gap: 28px;
+    min-height: 100vh;
+  }
+
+  /* ══════════════════════════════
+     SLIDE WRAPPER
+  ══════════════════════════════ */
+  .slide {
+    width: 1000px;
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 16px 56px rgba(0,0,0,0.55);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* barre déco gauche */
+  .slide::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+    background: linear-gradient(to bottom, var(--orange) 50%, var(--aubergine) 50%);
+    z-index: 10;
+  }
+
+  /* ── HEADER ── */
+  .slide-header {
+    background: var(--white);
+    padding: 10px 20px 8px 28px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--aubergine);
+    flex-shrink: 0;
+  }
+
+  .header-breadcrumb {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--text-mid);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .header-breadcrumb span { color: var(--orange); }
+
+  .slide-main-title {
+    color: var(--text-dark);
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    max-width: 700px;
+  }
+
+  .header-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  /* Logo Seequalis SVG inline */
+  .logo-sq {
+    width: 72px;
+    height: auto;
+  }
+
+  .header-meta-row {
+    display: flex;
+    gap: 12px;
+  }
+
+  .meta-pill {
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-mid);
+    background: var(--grey-light);
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+  .meta-pill strong { color: var(--orange); }
+
+  /* ── BODY : 3 colonnes ── */
+  .slide-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    flex: 1;
+    min-height: 370px;
+  }
+
+  .col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .col + .col {
+    border-left: 1px solid var(--grey-mid);
+  }
+
+  /* En-tête de colonne */
+  .col-head {
+    background: var(--aubergine);
+    padding: 7px 14px 6px 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .col-head-icon {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--orange);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 10px;
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .col-head-title {
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  /* Contenu de colonne */
+  .col-content {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  /* Bloc bullet */
+  .bullet-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .bullet-list li {
+    font-size: 11px;
+    color: var(--text-dark);
+    line-height: 1.5;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .bullet-list li::before {
+    content: '●';
+    position: absolute;
+    left: 0; top: 1px;
+    color: var(--orange);
+    font-size: 8px;
+  }
+
+  /* Bloc "stat" highlight (résultats chiffrés) */
+  .stat-block {
+    background: var(--grey-light);
+    border-left: 3px solid var(--orange);
+    border-radius: 3px;
+    padding: 7px 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .stat-icon {
+    color: var(--orange);
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .stat-text {
+    font-size: 11px;
+    color: var(--text-dark);
+    line-height: 1.45;
+  }
+
+  .stat-text strong {
+    color: var(--aubergine);
+    font-weight: 700;
+  }
+
+  /* Séparateur thématique dans la colonne */
+  .col-sep {
+    height: 1px;
+    background: var(--grey-mid);
+    margin: 2px 0;
+  }
+
+  /* ── FOOTER ── */
+  .slide-footer {
+    background: var(--aubergine);
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px 0 28px;
+    flex-shrink: 0;
+  }
+
+  .footer-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .footer-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .footer-client {
+    font-size: 9px;
+    color: rgba(255,255,255,0.5);
+    font-family: 'DM Mono', monospace;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .footer-num {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ══════════════════════════════
+     PANEL ÉDITEUR
+  ══════════════════════════════ */
+  .editor-panel {
+    width: 1000px;
+    background: #16213e;
+    border-radius: 10px;
+    padding: 22px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .editor-section-title {
+    font-size: 11px; font-weight: 700; color: var(--orange);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #2a2a4a;
+  }
+
+  .editor-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 20px;
+  }
+  .editor-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 20px;
+  }
+  .editor-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px 16px;
+  }
+
+  .field-group { display: flex; flex-direction: column; gap: 4px; }
+  .field-label {
+    font-size: 10px; font-weight: 700; color: #8888aa;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+
+  input[type="text"], textarea {
+    background: #0f3460;
+    border: 1px solid #2a2a6a;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 12px;
+    font-family: 'DM Sans', inherit;
+    padding: 7px 10px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+    resize: none;
+  }
+  input[type="text"]:focus, textarea:focus { border-color: var(--orange); }
+  textarea { min-height: 90px; line-height: 1.5; }
+
+  hr.sep { border: none; border-top: 1px solid #2a2a4a; margin: 0; }
+
+  .btn-export {
+    background: var(--orange); color: #fff;
+    border: none; border-radius: 4px;
+    font-size: 12px; font-weight: 700;
+    padding: 10px 24px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s;
+  }
+  .btn-export:hover { background: #c94e0f; }
+
+  .field-hint {
+    font-size: 10px; color: #555577; font-style: italic; margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     SLIDE PREVIEW
+══════════════════════════════════ -->
+<div class="slide" id="slide">
+
+  <!-- Header -->
+  <div class="slide-header">
+    <div>
+      <div class="header-breadcrumb">Référence Seequalis // <span id="s-domaine">User design</span></div>
+      <div class="slide-main-title" id="s-titre">Déploiement du processus de gestion des changements infrastructure IT</div>
+      <div class="header-meta-row" style="margin-top:6px;">
+        <div class="meta-pill">Client : <strong id="s-client">CLIENT</strong></div>
+        <div class="meta-pill">Période : <strong id="s-periode">2024 – 2025</strong></div>
+        <div class="meta-pill">Durée : <strong id="s-duree">6+ mois</strong></div>
+      </div>
+    </div>
+    <!-- Logo SVG Seequalis (stylisé) -->
+    <div class="header-logo">
+      <svg class="logo-sq" viewBox="0 0 80 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="26" font-family="'DM Sans', sans-serif" font-size="22" font-weight="800" fill="#270026">See</text>
+        <text x="38" y="26" font-family="'DM Sans', sans-serif" font-size="22" font-weight="800" fill="#EC671A">Qualis</text>
+        <rect x="0" y="30" width="80" height="2.5" fill="#EC671A" rx="1"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Body 3 colonnes -->
+  <div class="slide-body">
+
+    <!-- COL 1 : Contexte de la mission -->
+    <div class="col">
+      <div class="col-head">
+        <div class="col-head-icon">C</div>
+        <div class="col-head-title" id="s-col1-titre">Le contexte de la mission</div>
+      </div>
+      <div class="col-content">
+        <ul class="bullet-list" id="s-col1-bullets">
+          <li>Avec différentes sources de référence, plus de 6000 hôtels dans le monde ont des difficultés à trouver de la documentation de formation et de la connaissance unique et actualisée parmi les 800 (+) contenus d'apprentissage, ce qui entraîne une augmentation des appels/tickets L1.</li>
+          <li>Le Knowledge Manager, dans un environnement très international, doit créer un « Hotel Knowledge Base » dans l'ITSM (ServiceNow).</li>
+          <li>La base de connaissances devra être adoptée comme référence unique pour les 6000+ hôtels du monde entier.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- COL 2 : Méthode Seequalis -->
+    <div class="col">
+      <div class="col-head">
+        <div class="col-head-icon">M</div>
+        <div class="col-head-title" id="s-col2-titre">La méthode Seequalis</div>
+      </div>
+      <div class="col-content">
+        <ul class="bullet-list" id="s-col2-bullets">
+          <li>Réalisation d'un diagnostic et d'un plan de transformation/adaptation associé.</li>
+          <li>Déploiement de la stratégie de gestion des connaissances aux principales régions concernées dans le monde.</li>
+          <li>Identification des besoins des hôtels, des Hubs et du siège pour établir, définir et prioriser la mise à jour de la documentation disponible.</li>
+          <li>Création d'une « seule » base de connaissances avec un contenu actualisé, demandé et unique pour assurer une recherche et une consultation de qualité.</li>
+          <li>Intervention d'1 Senior Knowledge Manager consultant pendant 6+ mois pour réaliser la mission.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- COL 3 : Résultats obtenus -->
+    <div class="col">
+      <div class="col-head">
+        <div class="col-head-icon">R</div>
+        <div class="col-head-title" id="s-col3-titre">Les résultats obtenus</div>
+      </div>
+      <div class="col-content" id="s-col3-results">
+        <div class="stat-block">
+          <div class="stat-icon">🌐</div>
+          <div class="stat-text">Création d'une Hotel Knowledge Base unique dans <strong>6 langues</strong> : anglais, français, espagnol, chinois, portugais, turc.</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-icon">👥</div>
+          <div class="stat-text">Création/animation d'une « Knowledge Leaders Community » (<strong>23 participants</strong>) avec un leadership centralisé.</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-icon">🔗</div>
+          <div class="stat-text">Collaboration centralisée et unique entre les Knowledge Managers du siège et les Product Owners.</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-icon">📄</div>
+          <div class="stat-text">Identification des documents en double et obsolètes (<strong>500+</strong>) ; Mise à jour (<strong>100+</strong>) et création de nouveaux articles (<strong>124 KA</strong>).</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-icon">🚀</div>
+          <div class="stat-text">Migration de <strong>400+</strong> documents uniques et actualisés (anglais) avec accompagnement à la traduction multilingue.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="slide-footer">
+    <span class="footer-label" id="s-footer-label">Confidentiel — Seequalis · Non diffusable</span>
+    <div class="footer-right">
+      <span class="footer-client" id="s-footer-client">Business Case</span>
+      <span class="footer-num" id="s-slidenum">01</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════
+     PANEL ÉDITEUR
+══════════════════════════════════ -->
+<div class="editor-panel">
+
+  <!-- En-tête -->
+  <div>
+    <div class="editor-section-title">En-tête &amp; méta</div>
+    <div class="editor-grid-4">
+      <div class="field-group">
+        <div class="field-label">Domaine / catégorie</div>
+        <input type="text" id="e-domaine" value="User design">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Client (anonymisé)</div>
+        <input type="text" id="e-client" value="CLIENT">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Période</div>
+        <input type="text" id="e-periode" value="2024 – 2025">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Durée mission</div>
+        <input type="text" id="e-duree" value="6+ mois">
+      </div>
+    </div>
+    <div class="field-group" style="margin-top:10px;">
+      <div class="field-label">Titre principal de la slide</div>
+      <input type="text" id="e-titre" value="Déploiement du processus de gestion des changements infrastructure IT">
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Colonnes -->
+  <div>
+    <div class="editor-section-title">Colonnes — titres</div>
+    <div class="editor-grid-3">
+      <div class="field-group">
+        <div class="field-label">Titre colonne 1</div>
+        <input type="text" id="e-col1-titre" value="Le contexte de la mission">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Titre colonne 2</div>
+        <input type="text" id="e-col2-titre" value="La méthode Seequalis">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Titre colonne 3</div>
+        <input type="text" id="e-col3-titre" value="Les résultats obtenus">
+      </div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Contenu colonnes -->
+  <div>
+    <div class="editor-section-title">Contenu colonnes 1 &amp; 2 (bullets, une par ligne)</div>
+    <div class="editor-grid-2">
+      <div class="field-group">
+        <div class="field-label">Contexte — bullets</div>
+        <textarea id="e-col1-bullets">Avec différentes sources de référence, plus de 6000 hôtels dans le monde ont des difficultés à trouver de la documentation de formation et de la connaissance unique et actualisée parmi les 800 (+) contenus d'apprentissage, ce qui entraîne une augmentation des appels/tickets L1.
+Le Knowledge Manager, dans un environnement très international, doit créer un « Hotel Knowledge Base » dans l'ITSM (ServiceNow).
+La base de connaissances devra être adoptée comme référence unique pour les 6000+ hôtels du monde entier.</textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Méthode — bullets</div>
+        <textarea id="e-col2-bullets">Réalisation d'un diagnostic et d'un plan de transformation/adaptation associé.
+Déploiement de la stratégie de gestion des connaissances aux principales régions concernées dans le monde.
+Identification des besoins des hôtels, des Hubs et du siège pour établir, définir et prioriser la mise à jour de la documentation disponible.
+Création d'une « seule » base de connaissances avec un contenu actualisé, demandé et unique pour assurer une recherche et une consultation de qualité.
+Intervention d'1 Senior Knowledge Manager consultant pendant 6+ mois pour réaliser la mission.</textarea>
+      </div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Résultats : blocs stat -->
+  <div>
+    <div class="editor-section-title">Résultats obtenus (un par ligne — format : icône | texte)</div>
+    <div class="field-hint" style="color:#555577;font-size:10px;font-style:italic;">Sépare l'icône emoji du texte avec <code style="color:#EC671A"> | </code>. Mets le texte <code style="color:#EC671A">**en gras**</code> avec doubles astérisques.</div>
+    <div class="field-group" style="margin-top:8px;">
+      <textarea id="e-col3-results" style="min-height:130px;">🌐 | Création d'une Hotel Knowledge Base unique dans **6 langues** : anglais, français, espagnol, chinois, portugais, turc.
+👥 | Création/animation d'une « Knowledge Leaders Community » (**23 participants**) avec un leadership centralisé.
+🔗 | Collaboration centralisée et unique entre les Knowledge Managers du siège et les Product Owners.
+📄 | Identification des documents en double et obsolètes (**500+**) ; Mise à jour (**100+**) et création de nouveaux articles (**124 KA**).
+🚀 | Migration de **400+** documents uniques et actualisés (anglais) avec accompagnement à la traduction multilingue.</textarea>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Footer -->
+  <div>
+    <div class="editor-section-title">Pied de page</div>
+    <div class="editor-grid-3">
+      <div class="field-group">
+        <div class="field-label">Mention confidentialité</div>
+        <input type="text" id="e-footer-label" value="Confidentiel — Seequalis · Non diffusable">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Type de document</div>
+        <input type="text" id="e-footer-client" value="Business Case">
+      </div>
+      <div class="field-group">
+        <div class="field-label">N° de slide</div>
+        <input type="text" id="e-slidenum" value="01">
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;align-self:flex-end;margin-top:4px;">
+    <button class="btn-export" onclick="exportHTML()">⬇ HTML</button>
+    <button class="btn-export" style="background:#270026;" onmouseover="this.style.background='#3d0038'" onmouseout="this.style.background='#270026'" onclick="exportPDF()">⬇ PDF</button>
+  </div>
+
+</div>
+
+<script>
+// ── Champs simples ──
+const simpleFields = [
+  ['e-domaine',       's-domaine'],
+  ['e-client',        's-client'],
+  ['e-periode',       's-periode'],
+  ['e-duree',         's-duree'],
+  ['e-titre',         's-titre'],
+  ['e-col1-titre',    's-col1-titre'],
+  ['e-col2-titre',    's-col2-titre'],
+  ['e-col3-titre',    's-col3-titre'],
+  ['e-footer-label',  's-footer-label'],
+  ['e-footer-client', 's-footer-client'],
+  ['e-slidenum',      's-slidenum'],
+];
+simpleFields.forEach(([inp, tgt]) => {
+  document.getElementById(inp).addEventListener('input', function() {
+    document.getElementById(tgt).textContent = this.value;
+  });
+});
+
+// ── Bullets col1 et col2 ──
+function renderBullets(inputId, containerId) {
+  document.getElementById(inputId).addEventListener('input', function() {
+    const ul = document.getElementById(containerId);
+    ul.innerHTML = '';
+    this.value.split('\n').map(s => s.trim()).filter(Boolean).forEach(s => {
+      const li = document.createElement('li');
+      li.textContent = s;
+      ul.appendChild(li);
+    });
+  });
+}
+renderBullets('e-col1-bullets', 's-col1-bullets');
+renderBullets('e-col2-bullets', 's-col2-bullets');
+
+// ── Résultats col3 (icône | texte avec **gras**) ──
+function parseBold(text) {
+  return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+}
+
+document.getElementById('e-col3-results').addEventListener('input', function() {
+  const container = document.getElementById('s-col3-results');
+  container.innerHTML = '';
+  this.value.split('\n').map(s => s.trim()).filter(Boolean).forEach(line => {
+    const parts = line.split('|');
+    const icon = parts[0] ? parts[0].trim() : '●';
+    const text = parts[1] ? parts.slice(1).join('|').trim() : parts[0].trim();
+    const block = document.createElement('div');
+    block.className = 'stat-block';
+    block.innerHTML = `
+      <div class="stat-icon">${icon}</div>
+      <div class="stat-text">${parseBold(text)}</div>
+    `;
+    container.appendChild(block);
+  });
+});
+
+// ── Export HTML ──
+function exportHTML() {
+  const slideHTML = document.getElementById('slide').outerHTML;
+  const styles = Array.from(document.querySelectorAll('style')).map(s => s.outerHTML).join('\n');
+  const links = Array.from(document.querySelectorAll('link')).map(l => l.outerHTML).join('\n');
+  const full = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">${links}${styles}</head><body style="background:#f0f0f4;display:flex;justify-content:center;padding:32px;">${slideHTML}</body></html>`;
+  const blob = new Blob([full], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'business_case_' + (document.getElementById('e-client').value.replace(/[^a-z0-9]/gi,'_')) + '.html';
+  a.click();
+}
+
+// ── Export PDF ──
+async function exportPDF() {
+  const btn = event.currentTarget;
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Génération…';
+  btn.disabled = true;
+  try {
+    const slideEl = document.getElementById('slide');
+    const canvas  = await html2canvas(slideEl, { scale: 3, useCORS: true, backgroundColor: null });
+    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width / 3, canvas.height / 3] });
+    pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width / 3, canvas.height / 3);
+    const name = document.getElementById('e-client').value.replace(/[^a-z0-9]/gi, '_');
+    pdf.save('business_case_' + name + '.pdf');
+  } finally {
+    btn.textContent = orig;
+    btn.disabled = false;
+  }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</body>
+</html>
