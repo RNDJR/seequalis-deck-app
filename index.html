@@ -779,7 +779,7 @@
   // ════════════════════════════════════════════
   async function buildPdfBlob() {
     const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1040, 600]  // taille exacte de tes slides });
 
     const PW = 297;
     const PH = 210;
@@ -823,7 +823,7 @@
         drawY = 0;
       }
 
-      pdf.addImage(slide.img, 'JPEG', drawX, drawY, drawW, drawH);
+      pdf.addImage(slide.img, 'JPEG', 0, 0, 1040, 600);
     }
 
     fill.style.width = '100%';
