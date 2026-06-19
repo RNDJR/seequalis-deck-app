@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Slide générique — Seequalis</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --orange:         #EC671A;
+    --aubergine:      #270026;
+    --aubergine-mid:  #3d0038;
+    --aubergine-light:#5a0054;
+    --white:          #ffffff;
+    --grey-light:     #f4f4f6;
+    --grey-mid:       #e0e0e8;
+    --text-dark:      #1E1F1F;
+    --text-mid:       #555568;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #111118;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 48px;
+    gap: 28px;
+    min-height: 100vh;
+  }
+
+  /* ══════════════════════════════
+     SLIDE WRAPPER
+  ══════════════════════════════ */
+  .slide {
+    width: 1000px;
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 16px 56px rgba(0,0,0,0.55);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .slide::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+    background: linear-gradient(to bottom, var(--orange) 50%, var(--aubergine) 50%);
+    z-index: 10;
+  }
+
+  /* ── HEADER ── */
+  .slide-header {
+    background: var(--white);
+    padding: 10px 20px 8px 28px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--aubergine);
+    flex-shrink: 0;
+  }
+
+  .header-breadcrumb {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--text-mid);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .header-breadcrumb span { color: var(--orange); }
+
+  .slide-main-title {
+    color: var(--text-dark);
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    max-width: 760px;
+  }
+
+  .header-subtitle {
+    font-size: 11px;
+    color: var(--text-mid);
+    margin-top: 4px;
+    line-height: 1.4;
+    max-width: 700px;
+  }
+
+  .header-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .logo-sq { width: 72px; height: auto; }
+
+  /* ── BODY : colonnes dynamiques (1 à 4) ── */
+  .slide-body {
+    display: grid;
+    flex: 1;
+    min-height: 390px;
+  }
+
+  .slide-body.cols-1 { grid-template-columns: 1fr; }
+  .slide-body.cols-2 { grid-template-columns: 1fr 1fr; }
+  .slide-body.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .slide-body.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .col {
+    display: flex;
+    flex-direction: column;
+  }
+  .col + .col { border-left: 1px solid var(--grey-mid); }
+
+  /* En-tête de colonne */
+  .col-head {
+    background: var(--aubergine);
+    padding: 7px 14px 6px 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .col-head-icon {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--orange);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 10px;
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .col-head-title {
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .col-content {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  /* Mode "pleine largeur sans colonne" — paragraphe libre */
+  .col-content.free-text {
+    padding: 22px 30px;
+    justify-content: center;
+  }
+
+  .free-text-body {
+    font-size: 13px;
+    color: var(--text-dark);
+    line-height: 1.75;
+    white-space: pre-wrap;
+  }
+
+  .free-text-body strong { color: var(--aubergine); font-weight: 700; }
+
+  /* Bullet list */
+  .bullet-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .bullet-list li {
+    font-size: 11.5px;
+    color: var(--text-dark);
+    line-height: 1.55;
+    padding-left: 14px;
+    position: relative;
+  }
+  .bullet-list li::before {
+    content: '●';
+    position: absolute;
+    left: 0; top: 2px;
+    color: var(--orange);
+    font-size: 8px;
+  }
+
+  /* Bullet list grande taille (pour layout pleine largeur) */
+  .bullet-list.large li {
+    font-size: 13px;
+    padding-left: 18px;
+  }
+  .bullet-list.large li::before { font-size: 9px; top: 3px; }
+
+  /* Bloc stat highlight */
+  .stat-block {
+    background: var(--grey-light);
+    border-left: 3px solid var(--orange);
+    border-radius: 3px;
+    padding: 7px 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .stat-icon { color: var(--orange); font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .stat-text { font-size: 11px; color: var(--text-dark); line-height: 1.45; }
+  .stat-text strong { color: var(--aubergine); font-weight: 700; }
+
+  /* ── FOOTER ── */
+  .slide-footer {
+    background: var(--aubergine);
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px 0 28px;
+    flex-shrink: 0;
+  }
+  .footer-label {
+    font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.4);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    font-family: 'DM Mono', monospace;
+  }
+  .footer-right { display: flex; align-items: center; gap: 14px; }
+  .footer-client {
+    font-size: 9px; color: rgba(255,255,255,0.5);
+    font-family: 'DM Mono', monospace; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .footer-num { font-size: 10px; color: rgba(255,255,255,0.35); font-family: 'DM Mono', monospace; }
+
+  /* ══════════════════════════════
+     PANEL ÉDITEUR
+  ══════════════════════════════ */
+  .editor-panel {
+    width: 1000px;
+    background: #16213e;
+    border-radius: 10px;
+    padding: 22px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .editor-section-title {
+    font-size: 11px; font-weight: 700; color: var(--orange);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #2a2a4a;
+  }
+
+  .editor-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 20px; }
+  .editor-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+  .editor-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 16px; }
+
+  .field-group { display: flex; flex-direction: column; gap: 4px; }
+  .field-label {
+    font-size: 10px; font-weight: 700; color: #8888aa;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+
+  input[type="text"], textarea, select {
+    background: #0f3460;
+    border: 1px solid #2a2a6a;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 12px;
+    font-family: 'DM Sans', inherit;
+    padding: 7px 10px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+    resize: none;
+  }
+  input[type="text"]:focus, textarea:focus, select:focus { border-color: var(--orange); }
+  textarea { min-height: 90px; line-height: 1.5; }
+  select { cursor: pointer; }
+
+  hr.sep { border: none; border-top: 1px solid #2a2a4a; margin: 0; }
+
+  .btn-export {
+    background: var(--orange); color: #fff;
+    border: none; border-radius: 4px;
+    font-size: 12px; font-weight: 700;
+    padding: 10px 24px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s;
+  }
+  .btn-export:hover { background: #c94e0f; }
+  .btn-export:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .field-hint { font-size: 10px; color: #555577; font-style: italic; margin-top: 2px; }
+
+  /* Layout selector — boutons radio visuels */
+  .layout-picker {
+    display: flex;
+    gap: 8px;
+  }
+  .layout-btn {
+    flex: 1;
+    background: #0f3460;
+    border: 1px solid #2a2a6a;
+    border-radius: 5px;
+    padding: 10px 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .layout-btn:hover { border-color: var(--orange); }
+  .layout-btn.active { background: var(--orange); border-color: var(--orange); }
+  .layout-btn-icon { font-size: 16px; margin-bottom: 3px; }
+  .layout-btn-label {
+    font-size: 9px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: #aaa;
+  }
+  .layout-btn.active .layout-btn-label { color: #fff; }
+
+  /* Bloc colonne dans l'éditeur (répété dynamiquement) */
+  .col-editor {
+    background: #0f2040;
+    border: 1px solid #2a3a6a;
+    border-radius: 6px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .col-editor-title {
+    font-size: 9px; font-weight: 700; color: var(--orange);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .col-editor-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+
+  .mode-toggle {
+    display: flex;
+    gap: 6px;
+    margin-top: 2px;
+  }
+  .mode-toggle button {
+    flex: 1;
+    background: #1a1a3a;
+    border: 1px solid #2a2a6a;
+    color: #8888aa;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 5px 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .mode-toggle button.active { background: var(--orange); color: #fff; border-color: var(--orange); }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     SLIDE PREVIEW
+══════════════════════════════════ -->
+<div class="slide" id="slide">
+
+  <!-- Header -->
+  <div class="slide-header">
+    <div>
+      <div class="header-breadcrumb">Référence Seequalis // <span id="s-domaine">Catégorie</span></div>
+      <div class="slide-main-title" id="s-titre">Titre de la slide</div>
+      <div class="header-subtitle" id="s-soustitre">Sous-titre ou phrase de contexte optionnelle.</div>
+    </div>
+    <div class="header-logo">
+      <svg class="logo-sq" viewBox="0 0 80 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="26" font-family="'DM Sans', sans-serif" font-size="22" font-weight="800" fill="#270026">See</text>
+        <text x="38" y="26" font-family="'DM Sans', sans-serif" font-size="22" font-weight="800" fill="#EC671A">Qualis</text>
+        <rect x="0" y="30" width="80" height="2.5" fill="#EC671A" rx="1"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Body : colonnes dynamiques -->
+  <div class="slide-body cols-3" id="s-body">
+    <!-- généré par JS -->
+  </div>
+
+  <!-- Footer -->
+  <div class="slide-footer">
+    <span class="footer-label" id="s-footer-label">Confidentiel — Seequalis · Non diffusable</span>
+    <div class="footer-right">
+      <span class="footer-client" id="s-footer-client">Document</span>
+      <span class="footer-num" id="s-slidenum">01</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════
+     PANEL ÉDITEUR
+══════════════════════════════════ -->
+<div class="editor-panel">
+
+  <!-- En-tête -->
+  <div>
+    <div class="editor-section-title">En-tête &amp; méta</div>
+    <div class="editor-grid-2">
+      <div class="field-group">
+        <div class="field-label">Domaine / catégorie (breadcrumb)</div>
+        <input type="text" id="e-domaine" value="Catégorie">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Titre principal</div>
+        <input type="text" id="e-titre" value="Titre de la slide">
+      </div>
+    </div>
+    <div class="field-group" style="margin-top:10px;">
+      <div class="field-label">Sous-titre (optionnel — laisser vide pour masquer)</div>
+      <input type="text" id="e-soustitre" value="Sous-titre ou phrase de contexte optionnelle.">
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Layout picker -->
+  <div>
+    <div class="editor-section-title">Mise en page</div>
+    <div class="layout-picker" id="layout-picker">
+      <div class="layout-btn" data-cols="1"><div class="layout-btn-icon">▭</div><div class="layout-btn-label">1 bloc</div></div>
+      <div class="layout-btn" data-cols="2"><div class="layout-btn-icon">▥</div><div class="layout-btn-label">2 col.</div></div>
+      <div class="layout-btn active" data-cols="3"><div class="layout-btn-icon">▤</div><div class="layout-btn-label">3 col.</div></div>
+      <div class="layout-btn" data-cols="4"><div class="layout-btn-icon">▦</div><div class="layout-btn-label">4 col.</div></div>
+    </div>
+    <div class="field-hint">Le nombre de colonnes change instantanément le rendu et les champs ci-dessous.</div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Colonnes dynamiques -->
+  <div>
+    <div class="editor-section-title">Contenu des blocs</div>
+    <div class="editor-grid-3" id="cols-editor-grid">
+      <!-- généré par JS -->
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Footer -->
+  <div>
+    <div class="editor-section-title">Pied de page</div>
+    <div class="editor-grid-3">
+      <div class="field-group">
+        <div class="field-label">Mention confidentialité</div>
+        <input type="text" id="e-footer-label" value="Confidentiel — Seequalis · Non diffusable">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Type de document</div>
+        <input type="text" id="e-footer-client" value="Document">
+      </div>
+      <div class="field-group">
+        <div class="field-label">N° de slide</div>
+        <input type="text" id="e-slidenum" value="01">
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;align-self:flex-end;margin-top:4px;">
+    <button class="btn-export" onclick="exportHTML()">⬇ HTML</button>
+    <button class="btn-export" style="background:#270026;" onmouseover="this.style.background='#3d0038'" onmouseout="this.style.background='#270026'" onclick="exportPDF()">⬇ PDF</button>
+  </div>
+
+</div>
+
+<script>
+// ════════════════════════════
+// ÉTAT
+// ════════════════════════════
+let numCols = 3;
+
+// Données par colonne : { titre, icon, mode: 'bullets'|'free'|'stats', bullets, freeText, stats }
+let colsData = [
+  { titre: 'Le contexte',        icon: 'C', mode: 'bullets', bullets: 'Premier point de contexte.\nDeuxième point de contexte.\nTroisième point de contexte.', freeText: '', stats: '' },
+  { titre: 'La méthode',         icon: 'M', mode: 'bullets', bullets: 'Première étape de la méthode.\nDeuxième étape.\nTroisième étape.', freeText: '', stats: '' },
+  { titre: 'Les résultats',      icon: 'R', mode: 'stats',   bullets: '', freeText: '', stats: '🎯 | Premier résultat avec **chiffre clé**.\n📈 | Deuxième résultat obtenu.\n✅ | Troisième résultat.' },
+  { titre: 'Bloc 4',             icon: '4', mode: 'bullets', bullets: 'Point 1.\nPoint 2.', freeText: '', stats: '' },
+];
+
+// ════════════════════════════
+// HEADER simple bindings
+// ════════════════════════════
+const headerBindings = [
+  ['e-domaine',       's-domaine'],
+  ['e-titre',         's-titre'],
+  ['e-soustitre',     's-soustitre'],
+  ['e-footer-label',  's-footer-label'],
+  ['e-footer-client', 's-footer-client'],
+  ['e-slidenum',      's-slidenum'],
+];
+headerBindings.forEach(([inp, tgt]) => {
+  document.getElementById(inp).addEventListener('input', function() {
+    const el = document.getElementById(tgt);
+    el.textContent = this.value;
+    if (tgt === 's-soustitre') el.style.display = this.value.trim() ? 'block' : 'none';
+  });
+});
+
+// ════════════════════════════
+// LAYOUT PICKER
+// ════════════════════════════
+document.querySelectorAll('.layout-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    numCols = parseInt(btn.dataset.cols, 10);
+    document.getElementById('s-body').className = 'slide-body cols-' + numCols;
+    renderColsEditor();
+    renderSlideBody();
+  });
+});
+
+// ════════════════════════════
+// PARSE BOLD **texte**
+// ════════════════════════════
+function parseBold(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  let escaped = div.innerHTML;
+  return escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+}
+
+// ════════════════════════════
+// RENDER : éditeur des colonnes
+// ════════════════════════════
+function renderColsEditor() {
+  const grid = document.getElementById('cols-editor-grid');
+  grid.className = numCols <= 2 ? 'editor-grid-2' : numCols === 3 ? 'editor-grid-3' : 'editor-grid-4';
+  grid.innerHTML = '';
+
+  for (let i = 0; i < numCols; i++) {
+    if (!colsData[i]) colsData[i] = { titre: 'Bloc ' + (i+1), icon: String(i+1), mode: 'bullets', bullets: '', freeText: '', stats: '' };
+    const data = colsData[i];
+
+    const card = document.createElement('div');
+    card.className = 'col-editor';
+
+    card.innerHTML = `
+      <div class="col-editor-title">Bloc ${i + 1}</div>
+      <div class="col-editor-grid">
+        <div class="field-group">
+          <div class="field-label">Titre du bloc</div>
+          <input type="text" class="col-titre-input" data-idx="${i}" value="${data.titre.replace(/"/g,'&quot;')}">
+        </div>
+        <div class="field-group">
+          <div class="field-label">Icône (1 lettre ou emoji)</div>
+          <input type="text" class="col-icon-input" data-idx="${i}" value="${data.icon.replace(/"/g,'&quot;')}" maxlength="2">
+        </div>
+        <div class="mode-toggle">
+          <button type="button" class="mode-btn ${data.mode === 'bullets' ? 'active' : ''}" data-idx="${i}" data-mode="bullets">Puces</button>
+          <button type="button" class="mode-btn ${data.mode === 'stats' ? 'active' : ''}" data-idx="${i}" data-mode="stats">Résultats</button>
+          <button type="button" class="mode-btn ${data.mode === 'free' ? 'active' : ''}" data-idx="${i}" data-mode="free">Texte libre</button>
+        </div>
+        <div class="field-group content-field" data-idx="${i}"></div>
+      </div>
+    `;
+    grid.appendChild(card);
+  }
+
+  // Bind titre & icon
+  grid.querySelectorAll('.col-titre-input').forEach(inp => {
+    inp.addEventListener('input', function() {
+      colsData[this.dataset.idx].titre = this.value;
+      renderSlideBody();
+    });
+  });
+  grid.querySelectorAll('.col-icon-input').forEach(inp => {
+    inp.addEventListener('input', function() {
+      colsData[this.dataset.idx].icon = this.value;
+      renderSlideBody();
+    });
+  });
+
+  // Bind mode toggle
+  grid.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const idx = this.dataset.idx;
+      colsData[idx].mode = this.dataset.mode;
+      renderColsEditor();
+      renderSlideBody();
+    });
+  });
+
+  // Render le champ de contenu selon le mode
+  grid.querySelectorAll('.content-field').forEach(field => {
+    const idx = field.dataset.idx;
+    const data = colsData[idx];
+    let label = '', value = '', hint = '';
+    if (data.mode === 'bullets') {
+      label = 'Puces (une par ligne)';
+      value = data.bullets;
+    } else if (data.mode === 'stats') {
+      label = 'Résultats (icône | texte)';
+      hint = 'Sépare icône et texte avec | — utilise **gras** pour les chiffres clés.';
+      value = data.stats;
+    } else {
+      label = 'Texte libre';
+      hint = 'Paragraphe continu — utilise **gras** pour mettre en valeur.';
+      value = data.freeText;
+    }
+    field.innerHTML = `
+      <div class="field-label">${label}</div>
+      <textarea class="col-content-input" data-idx="${idx}" data-field="${data.mode === 'bullets' ? 'bullets' : data.mode === 'stats' ? 'stats' : 'freeText'}" style="min-height:110px;">${value.replace(/</g,'&lt;')}</textarea>
+      ${hint ? `<div class="field-hint">${hint}</div>` : ''}
+    `;
+    field.querySelector('textarea').addEventListener('input', function() {
+      colsData[this.dataset.idx][this.dataset.field] = this.value;
+      renderSlideBody();
+    });
+  });
+}
+
+// ════════════════════════════
+// RENDER : corps de la slide
+// ════════════════════════════
+function renderSlideBody() {
+  const body = document.getElementById('s-body');
+  body.innerHTML = '';
+
+  for (let i = 0; i < numCols; i++) {
+    const data = colsData[i] || { titre: 'Bloc', icon: '•', mode: 'bullets', bullets: '', freeText: '', stats: '' };
+
+    const col = document.createElement('div');
+    col.className = 'col';
+
+    let contentHTML = '';
+    if (data.mode === 'bullets') {
+      const items = data.bullets.split('\n').map(s => s.trim()).filter(Boolean)
+        .map(s => `<li>${parseBold(s)}</li>`).join('');
+      contentHTML = `<ul class="bullet-list ${numCols <= 2 ? 'large' : ''}">${items}</ul>`;
+    } else if (data.mode === 'stats') {
+      contentHTML = data.stats.split('\n').map(s => s.trim()).filter(Boolean).map(line => {
+        const parts = line.split('|');
+        const icon = parts[0] ? parts[0].trim() : '●';
+        const text = parts.length > 1 ? parts.slice(1).join('|').trim() : parts[0].trim();
+        return `<div class="stat-block"><div class="stat-icon">${icon}</div><div class="stat-text">${parseBold(text)}</div></div>`;
+      }).join('');
+    } else {
+      contentHTML = `<div class="free-text-body">${parseBold(data.freeText)}</div>`;
+    }
+
+    const contentClass = data.mode === 'free' ? 'col-content free-text' : 'col-content';
+
+    col.innerHTML = `
+      <div class="col-head">
+        <div class="col-head-icon">${data.icon}</div>
+        <div class="col-head-title">${data.titre}</div>
+      </div>
+      <div class="${contentClass}">${contentHTML}</div>
+    `;
+    body.appendChild(col);
+  }
+}
+
+// ════════════════════════════
+// EXPORT HTML
+// ════════════════════════════
+function exportHTML() {
+  const slideHTML = document.getElementById('slide').outerHTML;
+  const styles = Array.from(document.querySelectorAll('style')).map(s => s.outerHTML).join('\n');
+  const links = Array.from(document.querySelectorAll('link')).map(l => l.outerHTML).join('\n');
+  const full = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">${links}${styles}</head><body style="background:#f0f0f4;display:flex;justify-content:center;padding:32px;">${slideHTML}</body></html>`;
+  const blob = new Blob([full], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'slide_' + (document.getElementById('e-titre').value.replace(/[^a-z0-9]/gi,'_').slice(0,40) || 'generique') + '.html';
+  a.click();
+}
+
+// ════════════════════════════
+// EXPORT PDF
+// ════════════════════════════
+async function exportPDF() {
+  const btn = event.currentTarget;
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Génération…';
+  btn.disabled = true;
+  try {
+    const slideEl = document.getElementById('slide');
+    const canvas  = await html2canvas(slideEl, { scale: 3, useCORS: true, backgroundColor: null });
+    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width / 3, canvas.height / 3] });
+    pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width / 3, canvas.height / 3);
+    const name = document.getElementById('e-titre').value.replace(/[^a-z0-9]/gi, '_').slice(0,40) || 'generique';
+    pdf.save('slide_' + name + '.pdf');
+  } finally {
+    btn.textContent = orig;
+    btn.disabled = false;
+  }
+}
+
+// ════════════════════════════
+// INIT
+// ════════════════════════════
+renderColsEditor();
+renderSlideBody();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</body>
+</html>

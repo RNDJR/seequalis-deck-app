@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Démonstrateur Seequalis</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --orange: #FF6700;
+    --aubergine: #270026;
+    --aubergine-mid: #3d0038;
+    --aubergine-light: #5a0054;
+    --white: #ffffff;
+    --grey-light: #f4f4f6;
+    --grey-mid: #e0e0e8;
+    --text-dark: #1a1a2a;
+    --text-mid: #555568;
+    --teal: #1d6b74;
+    --teal-light: #2a8a96;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #111118;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 48px;
+    gap: 28px;
+    min-height: 100vh;
+  }
+
+  /* ══════════════════════════════
+     SLIDE WRAPPER
+  ══════════════════════════════ */
+  .slide {
+    width: 1000px;
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 16px 56px rgba(0,0,0,0.55);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* barre déco */
+  .slide::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+    background: linear-gradient(to bottom, var(--orange) 50%, var(--aubergine) 50%);
+    z-index: 10;
+  }
+
+  /* ── HEADER ── */
+  .slide-header {
+    background: var(--aubergine);
+    padding: 14px 28px 12px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 14px; }
+
+  .demo-badge {
+    background: var(--orange);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 2px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .slide-title {
+    color: #fff;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .header-meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .meta-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.6);
+    font-family: 'DM Mono', monospace;
+  }
+  .meta-chip strong { color: var(--orange); }
+
+  /* ── SUPRA ── */
+  .supra {
+    display: flex; align-items: center;
+    padding: 8px 0 6px 28px;
+    gap: 0;
+    background: #fff;
+    border-bottom: 1px solid var(--grey-mid);
+  }
+  .supra-seg1 { width: 20px; height: 3px; background: var(--aubergine); }
+  .supra-seg2 { width: 20px; height: 3px; background: var(--orange); }
+  .supra-text {
+    font-size: 9.5px; font-weight: 700; color: var(--orange);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-left: 8px;
+  }
+
+  /* ── BODY ── */
+  .slide-body {
+    display: grid;
+    grid-template-columns: 260px 1fr 220px;
+    grid-template-rows: auto;
+    gap: 0;
+    flex: 1;
+    min-height: 420px;
+  }
+
+  /* ── COL GAUCHE : contexte + stack ── */
+  .col-left {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--grey-mid);
+  }
+
+  /* ── COL CENTRE : archi fonctionnelle ── */
+  .col-center {
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* ── COL DROITE : résultats + perspectives ── */
+  .col-right {
+    border-left: 1px solid var(--grey-mid);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── BLOC GÉNÉRIQUE ── */
+  .bloc {
+    padding: 14px 16px;
+    flex-shrink: 0;
+  }
+
+  .bloc + .bloc { border-top: 1px solid var(--grey-mid); }
+
+  .bloc-title {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--aubergine);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 9px;
+  }
+
+  .bloc-title::before {
+    content: '';
+    width: 3px; height: 12px;
+    background: var(--orange);
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+
+  .bloc-text {
+    font-size: 11.5px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  /* ── STACK CHIPS ── */
+  .stack-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .stack-chip {
+    background: var(--aubergine);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  .stack-chip.orange { background: var(--orange); }
+  .stack-chip.outline {
+    background: transparent;
+    border: 1px solid var(--aubergine);
+    color: var(--aubergine);
+  }
+
+  /* ── ARCHI FONCTIONNELLE ── */
+  .archi-title {
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.12em; color: var(--aubergine);
+    display: flex; align-items: center; gap: 6px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--grey-mid);
+  }
+  .archi-title::before {
+    content: '';
+    width: 3px; height: 12px;
+    background: var(--orange);
+    border-radius: 1px;
+  }
+
+  .archi-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .archi-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .archi-node {
+    background: var(--teal);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 6px;
+    text-align: center;
+    min-width: 110px;
+    line-height: 1.3;
+    position: relative;
+  }
+
+  .archi-node.main {
+    background: var(--aubergine);
+    min-width: 140px;
+    font-size: 12px;
+  }
+
+  .archi-node.accent {
+    background: var(--orange);
+  }
+
+  .archi-node.outline {
+    background: transparent;
+    border: 1.5px solid var(--teal);
+    color: var(--teal);
+  }
+
+  .archi-node.sub {
+    background: #e8f4f6;
+    color: var(--teal);
+    font-size: 10.5px;
+    min-width: 90px;
+  }
+
+  .archi-arrow {
+    color: var(--grey-mid);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .archi-label {
+    font-size: 9px;
+    color: var(--text-mid);
+    font-style: italic;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .archi-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .archi-group-title {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 2px;
+  }
+
+  .archi-sub-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  /* ── RÉSULTATS ── */
+  .result-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .result-list li {
+    font-size: 11px;
+    color: var(--text-dark);
+    padding: 5px 10px 5px 22px;
+    background: var(--grey-light);
+    border-radius: 4px;
+    position: relative;
+    line-height: 1.4;
+    border-left: 3px solid var(--orange);
+  }
+  .result-list li::before {
+    content: '✓';
+    position: absolute; left: 7px; top: 6px;
+    color: var(--orange); font-size: 9px; font-weight: 700;
+  }
+
+  /* ── PERSPECTIVES ── */
+  .persp-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .persp-list li {
+    font-size: 10.5px;
+    color: var(--text-mid);
+    padding: 4px 10px 4px 20px;
+    position: relative;
+    line-height: 1.4;
+  }
+  .persp-list li::before {
+    content: '→';
+    position: absolute; left: 6px; top: 4px;
+    color: var(--aubergine); font-size: 10px;
+  }
+
+  /* ── FOOTER ── */
+  .slide-footer {
+    background: var(--aubergine);
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px 0 28px;
+    flex-shrink: 0;
+  }
+
+  .footer-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .footer-num {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ══════════════════════════════
+     PANEL ÉDITEUR
+  ══════════════════════════════ */
+  .editor-panel {
+    width: 1000px;
+    background: #16213e;
+    border-radius: 10px;
+    padding: 22px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .editor-section-title {
+    font-size: 11px; font-weight: 700; color: var(--orange);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #2a2a4a;
+  }
+
+  .editor-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 20px;
+  }
+  .editor-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 20px;
+  }
+  .editor-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px 16px;
+  }
+
+  .field-group { display: flex; flex-direction: column; gap: 4px; }
+  .field-label {
+    font-size: 10px; font-weight: 700; color: #8888aa;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+
+  input[type="text"], textarea {
+    background: #0f3460;
+    border: 1px solid #2a2a6a;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 12px;
+    font-family: 'DM Sans', inherit;
+    padding: 7px 10px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+    resize: none;
+  }
+  input[type="text"]:focus, textarea:focus { border-color: var(--orange); }
+  textarea { min-height: 70px; line-height: 1.5; }
+
+  input[type="file"] {
+    background: #0f3460;
+    border: 1px solid #2a2a6a;
+    border-radius: 4px;
+    color: #8888aa;
+    font-size: 11px;
+    padding: 6px 10px;
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .node-editor {
+    background: #0f2040;
+    border: 1px solid #2a3a6a;
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .node-editor-label {
+    font-size: 9px; font-weight: 700; color: var(--orange);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+
+  select {
+    background: #0f3460;
+    border: 1px solid #2a2a6a;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 11px;
+    padding: 5px 8px;
+    outline: none;
+    cursor: pointer;
+  }
+  select:focus { border-color: var(--orange); }
+
+  hr.sep { border: none; border-top: 1px solid #2a2a4a; margin: 0; }
+
+  .btn-export {
+    background: var(--orange); color: #fff;
+    border: none; border-radius: 4px;
+    font-size: 12px; font-weight: 700;
+    padding: 10px 24px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    align-self: flex-end;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s;
+  }
+  .btn-export:hover { background: #e05500; }
+
+  .chips-hint {
+    font-size: 10px; color: #555577; font-style: italic; margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     SLIDE PREVIEW
+══════════════════════════════════ -->
+<div class="slide" id="slide">
+
+  <!-- Supra -->
+  <div class="supra">
+    <div class="supra-seg1"></div><div class="supra-seg2"></div>
+    <span class="supra-text" id="s-supra">Démonstrateurs internes — Seequalis</span>
+  </div>
+
+  <!-- Header -->
+  <div class="slide-header">
+    <div class="header-left">
+      <div class="demo-badge" id="s-badge">DÉMO #1</div>
+      <div class="slide-title" id="s-title">Générateur de CV Seequalis</div>
+    </div>
+    <div class="header-meta">
+      <div class="meta-chip">Auteur : <strong id="s-auteur">Rémi R.</strong></div>
+      <div class="meta-chip">Version : <strong id="s-version">v1.0</strong></div>
+      <div class="meta-chip">Date : <strong id="s-date">Juin 2026</strong></div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="slide-body">
+
+    <!-- COL GAUCHE -->
+    <div class="col-left">
+
+      <!-- Contexte / objectif -->
+      <div class="bloc">
+        <div class="bloc-title">Contexte &amp; Objectif</div>
+        <p class="bloc-text" id="s-contexte">Uniformiser la production des CVs consultants au format Seequalis (charte, contenu structuré) sans passer par la mise en page manuelle sous Word.</p>
+      </div>
+
+      <!-- Problématique -->
+      <div class="bloc">
+        <div class="bloc-title">Problématique adressée</div>
+        <p class="bloc-text" id="s-problematique">Temps de mise en forme élevé, hétérogénéité des rendus, risque d'erreur de charte — notamment en phase de réponse à appel d'offres.</p>
+      </div>
+
+      <!-- Stack technique -->
+      <div class="bloc">
+        <div class="bloc-title">Stack technique</div>
+        <div class="stack-chips" id="s-stack">
+          <span class="stack-chip">Vercel</span>
+          <span class="stack-chip orange">Claude API</span>
+          <span class="stack-chip">Node.js</span>
+          <span class="stack-chip outline">Compte RMI</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COL CENTRE -->
+    <div class="col-center">
+      <div class="archi-title">Architecture fonctionnelle</div>
+
+      <div class="archi-flow" id="s-archi">
+
+        <!-- Niveau 1 : Input -->
+        <div class="archi-group">
+          <div class="archi-group-title">Entrée</div>
+          <div class="archi-sub-row" id="archi-input">
+            <div class="archi-node sub">Template SQ</div>
+            <div class="archi-node sub">Données consultant</div>
+          </div>
+        </div>
+
+        <div class="archi-row">
+          <div class="archi-arrow">↓</div>
+        </div>
+
+        <!-- Niveau 2 : Traitement -->
+        <div class="archi-group">
+          <div class="archi-group-title">Traitement</div>
+          <div class="archi-sub-row" id="archi-core">
+            <div class="archi-node main">Claude API</div>
+            <div class="archi-arrow" style="color:#aaa;">+</div>
+            <div class="archi-node outline">Vercel / Node</div>
+          </div>
+        </div>
+
+        <div class="archi-row">
+          <div class="archi-arrow">↓</div>
+        </div>
+
+        <!-- Niveau 3 : Sortie -->
+        <div class="archi-group">
+          <div class="archi-group-title">Sorties</div>
+          <div class="archi-sub-row" id="archi-output">
+            <div class="archi-node sub">Aperçu navigateur</div>
+            <div class="archi-node accent">Export DOCX</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- COL DROITE -->
+    <div class="col-right">
+
+      <!-- Résultats -->
+      <div class="bloc" style="flex:1;display:flex;flex-direction:column;">
+        <div class="bloc-title">Résultats</div>
+        <ul class="result-list" id="s-resultats">
+          <li>CV propre au format SQ (charte, contenu)</li>
+          <li>Modifiable (Export DOCX)</li>
+          <li>Adapté au besoin commerce</li>
+        </ul>
+      </div>
+
+      <!-- Perspectives -->
+      <div class="bloc" style="flex:1;display:flex;flex-direction:column;border-top:1px solid var(--grey-mid);">
+        <div class="bloc-title">Perspectives</div>
+        <ul class="persp-list" id="s-perspectives">
+          <li>Intégration SharePoint</li>
+          <li>Multi-templates par client</li>
+          <li>Scoring automatique des profils</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="slide-footer">
+    <span class="footer-label" id="s-footer-label">Interne — Seequalis · Non diffusable</span>
+    <span class="footer-num" id="s-slidenum">01</span>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════
+     PANEL ÉDITEUR
+══════════════════════════════════ -->
+<div class="editor-panel">
+
+  <!-- En-tête -->
+  <div>
+    <div class="editor-section-title">En-tête &amp; méta</div>
+    <div class="editor-grid">
+      <div class="field-group">
+        <div class="field-label">Bandeau supra</div>
+        <input type="text" id="e-supra" value="Démonstrateurs internes — Seequalis">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Badge démo</div>
+        <input type="text" id="e-badge" value="DÉMO #1">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Titre du démonstrateur</div>
+        <input type="text" id="e-title" value="Générateur de CV Seequalis">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Auteur</div>
+        <input type="text" id="e-auteur" value="Rémi R.">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Version</div>
+        <input type="text" id="e-version" value="v1.0">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Date</div>
+        <input type="text" id="e-date" value="Juin 2026">
+      </div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Contexte + Problématique -->
+  <div>
+    <div class="editor-section-title">Colonne gauche</div>
+    <div class="editor-grid-2">
+      <div class="field-group">
+        <div class="field-label">Contexte &amp; Objectif</div>
+        <textarea id="e-contexte">Uniformiser la production des CVs consultants au format Seequalis (charte, contenu structuré) sans passer par la mise en page manuelle sous Word.</textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Problématique adressée</div>
+        <textarea id="e-problematique">Temps de mise en forme élevé, hétérogénéité des rendus, risque d'erreur de charte — notamment en phase de réponse à appel d'offres.</textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stack -->
+  <div class="field-group">
+    <div class="field-label">Stack technique (séparés par des virgules — préfixe <code style="color:#FF6700">!</code> = orange, <code style="color:#FF6700">?</code> = outline)</div>
+    <input type="text" id="e-stack" value="Vercel, !Claude API, Node.js, ?Compte RMI">
+    <div class="chips-hint">ex : <code>!Claude API</code> → chip orange &nbsp;|&nbsp; <code>?SharePoint</code> → chip outline</div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Archi -->
+  <div>
+    <div class="editor-section-title">Architecture fonctionnelle</div>
+    <div class="editor-grid">
+      <div class="field-group">
+        <div class="field-label">Entrées (une par ligne)</div>
+        <textarea id="e-archi-input">Template SQ
+Données consultant</textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Traitement core (une par ligne)</div>
+        <textarea id="e-archi-core">!Claude API
+Vercel / Node</textarea>
+        <div class="chips-hint">Préfixe <code style="color:#FF6700">!</code> = nœud principal (aubergine)</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Sorties (une par ligne)</div>
+        <textarea id="e-archi-output">Aperçu navigateur
+!Export DOCX</textarea>
+        <div class="chips-hint">Préfixe <code style="color:#FF6700">!</code> = accent orange</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Résultats + Perspectives -->
+  <div>
+    <div class="editor-section-title">Résultats &amp; Perspectives</div>
+    <div class="editor-grid-2">
+      <div class="field-group">
+        <div class="field-label">Résultats (un par ligne)</div>
+        <textarea id="e-resultats">CV propre au format SQ (charte, contenu)
+Modifiable (Export DOCX)
+Adapté au besoin commerce</textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Perspectives (une par ligne)</div>
+        <textarea id="e-perspectives">Intégration SharePoint
+Multi-templates par client
+Scoring automatique des profils</textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div>
+    <div class="editor-section-title">Pied de page</div>
+    <div class="editor-grid-2">
+      <div class="field-group">
+        <div class="field-label">Mention pied de page</div>
+        <input type="text" id="e-footer-label" value="Interne — Seequalis · Non diffusable">
+      </div>
+      <div class="field-group">
+        <div class="field-label">N° de diapo</div>
+        <input type="text" id="e-slidenum" value="01">
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;align-self:flex-end;">
+    <button class="btn-export" onclick="exportHTML()">⬇ HTML</button>
+    <button class="btn-export" style="background:#270026;" onmouseover="this.style.background='#3d0038'" onmouseout="this.style.background='#270026'" onclick="exportPDF()">⬇ PDF</button>
+    <button class="btn-export" style="background:#1d6b74;" onmouseover="this.style.background='#155258'" onmouseout="this.style.background='#1d6b74'" onclick="addToDeck()">＋ Ajouter au deck</button>
+  </div>
+</div>
+
+<script>
+// ── Sync champs simples ──
+const simpleFields = [
+  ['e-supra',         's-supra'],
+  ['e-badge',         's-badge'],
+  ['e-title',         's-title'],
+  ['e-auteur',        's-auteur'],
+  ['e-version',       's-version'],
+  ['e-date',          's-date'],
+  ['e-contexte',      's-contexte'],
+  ['e-problematique', 's-problematique'],
+  ['e-footer-label',  's-footer-label'],
+  ['e-slidenum',      's-slidenum'],
+];
+simpleFields.forEach(([inp, tgt]) => {
+  document.getElementById(inp).addEventListener('input', function() {
+    document.getElementById(tgt).textContent = this.value;
+  });
+});
+
+// ── Stack chips ──
+document.getElementById('e-stack').addEventListener('input', function() {
+  const container = document.getElementById('s-stack');
+  container.innerHTML = '';
+  this.value.split(',').map(s => s.trim()).filter(Boolean).forEach(s => {
+    const span = document.createElement('span');
+    if (s.startsWith('!')) {
+      span.className = 'stack-chip orange';
+      span.textContent = s.slice(1);
+    } else if (s.startsWith('?')) {
+      span.className = 'stack-chip outline';
+      span.textContent = s.slice(1);
+    } else {
+      span.className = 'stack-chip';
+      span.textContent = s;
+    }
+    container.appendChild(span);
+  });
+});
+
+// ── Archi nodes ──
+function renderArchiGroup(inputId, containerId, defaultClass) {
+  document.getElementById(inputId).addEventListener('input', function() {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    this.value.split('\n').map(s => s.trim()).filter(Boolean).forEach((s, i, arr) => {
+      const node = document.createElement('div');
+      if (s.startsWith('!')) {
+        node.className = inputId === 'e-archi-output' ? 'archi-node accent' : 'archi-node main';
+        node.textContent = s.slice(1);
+      } else {
+        node.className = defaultClass;
+        node.textContent = s;
+      }
+      container.appendChild(node);
+      if (i < arr.length - 1 && inputId === 'e-archi-core') {
+        const plus = document.createElement('div');
+        plus.className = 'archi-arrow';
+        plus.style.color = '#aaa';
+        plus.textContent = '+';
+        container.appendChild(plus);
+      }
+    });
+  });
+}
+renderArchiGroup('e-archi-input',  'archi-input',  'archi-node sub');
+renderArchiGroup('e-archi-core',   'archi-core',   'archi-node outline');
+renderArchiGroup('e-archi-output', 'archi-output', 'archi-node sub');
+
+// ── Résultats ──
+document.getElementById('e-resultats').addEventListener('input', function() {
+  const ul = document.getElementById('s-resultats');
+  ul.innerHTML = '';
+  this.value.split('\n').map(s => s.trim()).filter(Boolean).forEach(s => {
+    const li = document.createElement('li');
+    li.textContent = s;
+    ul.appendChild(li);
+  });
+});
+
+// ── Perspectives ──
+document.getElementById('e-perspectives').addEventListener('input', function() {
+  const ul = document.getElementById('s-perspectives');
+  ul.innerHTML = '';
+  this.value.split('\n').map(s => s.trim()).filter(Boolean).forEach(s => {
+    const li = document.createElement('li');
+    li.textContent = s;
+    ul.appendChild(li);
+  });
+});
+
+// ── Export ──
+function exportHTML() {
+  const slideHTML = document.getElementById('slide').outerHTML;
+  const styles = Array.from(document.querySelectorAll('style')).map(s => s.outerHTML).join('\n');
+  const links = Array.from(document.querySelectorAll('link')).map(l => l.outerHTML).join('\n');
+  const full = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">${links}${styles}</head><body style="background:#f0f0f4;display:flex;justify-content:center;padding:32px;">${slideHTML}</body></html>`;
+  const blob = new Blob([full], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'slide_demo_' + (document.getElementById('e-badge').value.replace(/[^a-z0-9]/gi,'_')) + '.html';
+  a.click();
+}
+
+// ── Export PPTX ──
+
+// ── Export PDF (slide unique) ──
+async function exportPDF() {
+  const btn = event.currentTarget;
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Génération…';
+  btn.disabled = true;
+  try {
+    const slideEl = document.getElementById('slide');
+    const canvas  = await html2canvas(slideEl, { scale: 3, useCORS: true, backgroundColor: null });
+    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width / 3, canvas.height / 3] });
+    pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width / 3, canvas.height / 3);
+    const name = (document.getElementById('e-badge') || document.getElementById('e-title') || { value: 'slide' }).value.replace(/[^a-z0-9]/gi, '_');
+    pdf.save('slide_' + name + '.pdf');
+  } finally {
+    btn.textContent = orig;
+    btn.disabled = false;
+  }
+}
+
+// ── Ajouter au deck ──
+async function addToDeck() {
+  const btn = event.currentTarget;
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Capture…';
+  btn.disabled = true;
+  try {
+    const slideEl = document.getElementById('slide');
+    const canvas  = await html2canvas(slideEl, { scale: 2, useCORS: true, backgroundColor: null });
+    const imgData = canvas.toDataURL('image/jpeg', 0.88);
+    // Lire le deck existant
+    let deck = [];
+    try { deck = JSON.parse(localStorage.getItem('seequalis_deck') || '[]'); } catch(e) {}
+    // Metadata
+    const titleEl = document.getElementById('s-title') || document.getElementById('s-badge');
+    const title = titleEl ? titleEl.textContent.trim() : 'Slide';
+    const id = Date.now();
+    deck.push({ id, title, img: imgData });
+    localStorage.setItem('seequalis_deck', JSON.stringify(deck));
+    btn.textContent = '✓ Ajouté ! (' + deck.length + ' slide' + (deck.length > 1 ? 's' : '') + ')';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2200);
+  } catch(e) {
+    btn.textContent = '✗ Erreur';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
+  }
+}
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</body>
+</html>

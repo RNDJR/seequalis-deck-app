@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Éditeur diapo phase</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #1a1a2e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 40px;
+    min-height: 100vh;
+    gap: 24px;
+  }
+
+  h1 {
+    color: #FF6700;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  /* ════════════════════════════
+     SLIDE
+  ════════════════════════════ */
+  .slide {
+    width: 960px;
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    flex-shrink: 0;
+  }
+
+  .side-bar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0; width: 6px;
+    background: linear-gradient(to bottom, #FF6700 50%, #270026 50%);
+  }
+
+  /* supra */
+  .supra {
+    display: flex; align-items: center;
+    padding: 8px 0 4px 22px;
+  }
+  .supra-seg1 { width: 22px; height: 3px; background: #270026; }
+  .supra-seg2 { width: 22px; height: 3px; background: #FF6700; }
+  .supra-text {
+    font-size: 10px; font-weight: 600; color: #FF6700;
+    text-transform: uppercase; letter-spacing: 0.1em; margin-left: 8px;
+  }
+
+  /* header */
+  .header {
+    background: #270026;
+    padding: 12px 24px 10px 22px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .phase-badge {
+    background: #FF6700; color: #fff;
+    font-size: 11px; font-weight: 700;
+    padding: 4px 12px; border-radius: 2px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .phase-title { color: #fff; font-size: 20px; font-weight: 700; }
+  .phase-duration { color: #FF6700; font-size: 13px; font-weight: 600; letter-spacing: 0.05em; }
+
+  /* body grid : 3 col gauche + zone livrable droite */
+  .body-wrap {
+    display: flex;
+    height: 340px;
+    padding: 12px 18px 0 22px;
+    gap: 0;
+  }
+
+  /* 4 colonnes info */
+  .cols-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    flex: 1;
+    gap: 0;
+  }
+
+  .col {
+    padding: 0 12px;
+    border-right: 1px solid #ebebeb;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .col:first-child { padding-left: 0; }
+
+  /* zone capture */
+  .col-capture {
+    width: 200px;
+    flex-shrink: 0;
+    border-left: 2px solid #270026;
+    padding: 0 0 0 14px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .col-header {
+    display: flex; align-items: center; gap: 7px;
+    margin-bottom: 10px; padding-bottom: 6px;
+    border-bottom: 2px solid #270026;
+    flex-shrink: 0;
+  }
+  .col-icon {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+  }
+  .icon-obj { background: #270026; color: #FF6700; }
+  .icon-act { background: #FF6700; color: #fff; font-weight: 700; }
+  .icon-liv { background: #270026; color: #fff; }
+  .icon-pre { background: #f4f4f4; color: #270026; border: 1px solid #270026; }
+  .icon-cap { background: #270026; color: #fff; }
+
+  .col-label {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em; color: #270026;
+  }
+
+  /* contenu slide (rendu final) */
+  .objective-text {
+    font-size: 11.5px; color: #333; line-height: 1.6; font-style: italic;
+  }
+
+  .item-list { list-style: none; flex: 1; overflow: hidden; }
+  .item-list li {
+    font-size: 11px; color: #333;
+    padding: 3px 0 3px 13px;
+    border-bottom: 1px dotted #e8e8e8;
+    position: relative; line-height: 1.4;
+  }
+  .item-list li:empty { display: none; }
+  .item-list li:last-child { border-bottom: none; }
+  .item-list li::before {
+    content: '▸'; position: absolute; left: 0;
+    color: #FF6700; font-size: 10px; top: 4px;
+  }
+
+  .prereq-chip {
+    display: flex; align-items: flex-start; gap: 6px;
+    background: #fff8f5; border: 1px solid #FF6700;
+    border-radius: 3px; padding: 4px 7px;
+    font-size: 10.5px; color: #270026; line-height: 1.4;
+    margin-bottom: 4px;
+  }
+  .prereq-chip:empty { display: none; }
+  .prereq-chip .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #FF6700; flex-shrink: 0; margin-top: 3px;
+  }
+
+  /* capture zone */
+  .capture-frame {
+    flex: 1;
+    border: 2px dashed #ccc;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fafafa;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+  }
+  .capture-frame img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    position: absolute; inset: 0;
+  }
+  .capture-placeholder {
+    text-align: center;
+    color: #bbb;
+    font-size: 11px;
+    line-height: 1.5;
+    pointer-events: none;
+  }
+  .capture-placeholder span { font-size: 22px; display: block; margin-bottom: 4px; }
+  .capture-legend {
+    font-size: 9.5px; color: #888; font-style: italic;
+    text-align: center;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+
+  /* Timeline */
+  .timeline-bar {
+    height: 60px;
+    background: #f9f9f9;
+    border-top: 1px solid #e4e4e4;
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    position: relative;
+  }
+
+  .tl-phases {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    padding-top: 6px;
+  }
+
+  .tl-stop { display: flex; flex-direction: column; align-items: center; flex: 0 0 auto; }
+
+  .tl-dot {
+    width: 13px; height: 13px; border-radius: 50%;
+    border: 2px solid #ccc; background: #fff; z-index: 2;
+    flex-shrink: 0;
+  }
+  .tl-dot.done   { border-color: #270026; background: #270026; }
+  .tl-dot.active { border-color: #FF6700; background: #FF6700; box-shadow: 0 0 0 3px rgba(255,103,0,0.2); }
+
+  .tl-name {
+    font-size: 8.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.07em; color: #bbb; margin-top: 3px; white-space: nowrap;
+    text-align: center;
+  }
+  .tl-name.done   { color: #270026; }
+  .tl-name.active { color: #FF6700; }
+
+  .tl-dim {
+    font-size: 8px; color: #999; margin-top: 1px;
+    white-space: nowrap; text-align: center; font-style: italic;
+  }
+  .tl-dim.active { color: #FF6700; font-weight: 600; }
+
+  .tl-segment {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding-top: 5px;
+  }
+  .tl-line { height: 2px; background: #ddd; }
+  .tl-line.done { background: #270026; }
+
+  .slide-num {
+    position: absolute; bottom: 5px; right: 12px;
+    font-size: 10px; color: #ccc;
+  }
+
+  /* ════════════════════════════
+     PANEL ÉDITEUR
+  ════════════════════════════ */
+  .editor-panel {
+    width: 960px;
+    background: #16213e;
+    border-radius: 8px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .editor-title {
+    font-size: 12px; font-weight: 700; color: #FF6700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    border-bottom: 1px solid #2a2a4a;
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+  }
+
+  .editor-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 20px;
+  }
+
+  .editor-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 20px;
+  }
+
+  .field-group { display: flex; flex-direction: column; gap: 4px; }
+
+  .field-label {
+    font-size: 10px; font-weight: 700; color: #8888aa;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+
+  input[type="text"], textarea, input[type="file"] {
+    background: #0f3460;
+    border: 1px solid #2a2a6a;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 12px;
+    font-family: inherit;
+    padding: 7px 10px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+    resize: none;
+  }
+  input[type="text"]:focus, textarea:focus {
+    border-color: #FF6700;
+  }
+  textarea { min-height: 60px; line-height: 1.4; }
+
+  input[type="file"] {
+    padding: 5px 10px;
+    cursor: pointer;
+    color: #8888aa;
+    font-size: 11px;
+  }
+
+  .btn-export {
+    background: #FF6700; color: #fff;
+    border: none; border-radius: 4px;
+    font-size: 12px; font-weight: 700;
+    padding: 10px 24px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    align-self: flex-end;
+    transition: background 0.15s;
+  }
+  .btn-export:hover { background: #e05500; }
+
+  .section-divider {
+    border: none;
+    border-top: 1px solid #2a2a4a;
+    margin: 0;
+  }
+
+  /* Timeline editor */
+  .tl-editor-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px 16px;
+  }
+
+  .tl-phase-editor {
+    background: #0f2040;
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border: 1px solid #2a3a6a;
+  }
+
+  .tl-phase-label {
+    font-size: 10px; font-weight: 700; color: #FF6700;
+    text-transform: uppercase; letter-spacing: 0.07em;
+  }
+
+  .radio-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .radio-group label {
+    font-size: 10px; color: #aaa;
+    display: flex; align-items: center; gap: 3px; cursor: pointer;
+  }
+  .radio-group input[type="radio"] { accent-color: #FF6700; cursor: pointer; }
+
+  .remove-btn {
+    background: none; border: 1px solid #444; color: #888;
+    border-radius: 3px; font-size: 10px; padding: 2px 6px;
+    cursor: pointer; align-self: flex-end;
+    transition: all 0.15s;
+  }
+  .remove-btn:hover { border-color: #FF6700; color: #FF6700; }
+
+</style>
+</head>
+<body>
+
+<h1>✦ Éditeur diapo — Détail de phase</h1>
+
+<!-- ══════════ SLIDE PREVIEW ══════════ -->
+<div class="slide" id="slide">
+  <div class="side-bar"></div>
+
+  <div class="supra">
+    <div class="supra-seg1"></div><div class="supra-seg2"></div>
+    <span class="supra-text" id="s-supra">Approche et Méthodologie proposées</span>
+  </div>
+
+  <div class="header">
+    <div class="header-left">
+      <div class="phase-badge" id="s-badge">#1 Cadrage</div>
+      <div class="phase-title" id="s-title">Cadrage & Kick-Off</div>
+    </div>
+    <div class="phase-duration" id="s-duration">⏱ 5 jours</div>
+  </div>
+
+  <div class="body-wrap">
+    <!-- 4 colonnes info -->
+    <div class="cols-info">
+
+      <!-- Objectif -->
+      <div class="col">
+        <div class="col-header">
+          <div class="col-icon icon-obj">🎯</div>
+          <div class="col-label">Objectif</div>
+        </div>
+        <p class="objective-text" id="s-objectif">Aligner Seequalis et le client sur le périmètre, les enjeux et les modalités pratiques de la mission avant le lancement des entretiens.</p>
+      </div>
+
+      <!-- Actions Seequalis -->
+      <div class="col">
+        <div class="col-header">
+          <div class="col-icon icon-act">S</div>
+          <div class="col-label">Actions Seequalis</div>
+        </div>
+        <ul class="item-list" id="s-actions">
+          <li>Formalisation du contexte et des enjeux</li>
+          <li>Préparation des trames d'entretiens</li>
+          <li>Préparation du support Kick-Off</li>
+          <li>Définition des objectifs d'audit</li>
+          <li></li>
+        </ul>
+      </div>
+
+      <!-- Livrables -->
+      <div class="col">
+        <div class="col-header">
+          <div class="col-icon icon-liv">📄</div>
+          <div class="col-label">Livrables</div>
+        </div>
+        <ul class="item-list" id="s-livrables">
+          <li>Trames des entretiens</li>
+          <li>Support de Kick-Off</li>
+          <li>Planning des entretiens</li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+
+      <!-- Prérequis -->
+      <div class="col" style="border-right:none;">
+        <div class="col-header">
+          <div class="col-icon icon-pre">⚠</div>
+          <div class="col-label">Prérequis client</div>
+        </div>
+        <div id="s-prereqs">
+          <div class="prereq-chip"><span class="dot"></span><span>Validation support Kick-Off (30 min)</span></div>
+          <div class="prereq-chip"><span class="dot"></span><span>Participation Kick-Off (1H)</span></div>
+          <div class="prereq-chip"><span class="dot"></span><span>Validation des acteurs & disponibilités</span></div>
+          <div class="prereq-chip"><span class="dot"></span><span></span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Capture livrable -->
+    <div class="col-capture">
+      <div class="col-header" style="border-bottom:2px solid #270026;">
+        <div class="col-icon icon-cap">📎</div>
+        <div class="col-label">Exemple livrable</div>
+      </div>
+      <div class="capture-frame" id="capture-frame" onclick="document.getElementById('e-capture').click()">
+        <div class="capture-placeholder" id="capture-placeholder">
+          <span>🖼</span>Cliquez pour charger une capture
+        </div>
+        <img id="capture-img" src="" style="display:none;">
+      </div>
+      <div class="capture-legend" id="s-capture-legend">Extrait — Livrable Kick-Off</div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline-bar">
+    <div class="tl-phases" id="s-timeline">
+      <!-- généré par JS -->
+    </div>
+    <span class="slide-num" id="s-slidenum">14</span>
+  </div>
+</div>
+
+<!-- ══════════ PANEL ÉDITEUR ══════════ -->
+<div class="editor-panel">
+
+  <!-- En-tête -->
+  <div>
+    <div class="editor-title">En-tête</div>
+    <div class="editor-grid">
+      <div class="field-group">
+        <div class="field-label">Bandeau supra</div>
+        <input type="text" id="e-supra" value="Approche et Méthodologie proposées">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Badge phase</div>
+        <input type="text" id="e-badge" value="#1 Cadrage">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Titre principal</div>
+        <input type="text" id="e-title" value="Cadrage & Kick-Off">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Durée</div>
+        <input type="text" id="e-duration" value="⏱ 5 jours">
+      </div>
+      <div class="field-group">
+        <div class="field-label">N° de diapo</div>
+        <input type="text" id="e-slidenum" value="14">
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- Objectif -->
+  <div>
+    <div class="editor-title">Objectif</div>
+    <textarea id="e-objectif">Aligner Seequalis et le client sur le périmètre, les enjeux et les modalités pratiques de la mission avant le lancement des entretiens.</textarea>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- Actions + Livrables -->
+  <div>
+    <div class="editor-title">Actions Seequalis &amp; Livrables</div>
+    <div class="editor-grid-2">
+      <div class="field-group">
+        <div class="field-label">Actions (une par ligne, max 5)</div>
+        <textarea id="e-actions" rows="6">Formalisation du contexte et des enjeux
+Préparation des trames d'entretiens
+Préparation du support Kick-Off
+Définition des objectifs d'audit
+</textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Livrables (une par ligne, max 5)</div>
+        <textarea id="e-livrables" rows="6">Trames des entretiens
+Support de Kick-Off
+Planning des entretiens
+</textarea>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- Prérequis -->
+  <div>
+    <div class="editor-title">Prérequis client</div>
+    <div class="field-group">
+      <div class="field-label">Prérequis (un par ligne, max 4)</div>
+      <textarea id="e-prereqs" rows="5">Validation support Kick-Off (30 min)
+Participation Kick-Off (1H)
+Validation des acteurs & disponibilités
+</textarea>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- Capture livrable -->
+  <div>
+    <div class="editor-title">Exemple de livrable (capture)</div>
+    <div class="editor-grid-2">
+      <div class="field-group">
+        <div class="field-label">Image (PNG, JPG…)</div>
+        <input type="file" id="e-capture" accept="image/*">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Légende sous la capture</div>
+        <input type="text" id="e-capture-legend" value="Extrait — Livrable Kick-Off">
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- Timeline -->
+  <div>
+    <div class="editor-title">Timeline — phases &amp; dimensionnement</div>
+    <div class="tl-editor-grid" id="tl-editor">
+      <!-- généré par JS -->
+    </div>
+  </div>
+
+  <button class="btn-export" onclick="exportHTML()">⬇ Exporter HTML</button>
+
+</div>
+
+<script>
+// ─── ÉTAT ───
+const phases = [
+  { name: '#1 Cadrage',     dim: '5 j',   status: 'active' },
+  { name: '#2 Entretiens',  dim: '7-8 j', status: 'inactive' },
+  { name: '#3 Analyse',     dim: '8 j',   status: 'inactive' },
+  { name: '#4 Restitution', dim: '5 j',   status: 'inactive' },
+];
+
+// ─── SYNC champs simples ───
+function syncField(inputId, targetId, transform) {
+  const input = document.getElementById(inputId);
+  const target = document.getElementById(targetId);
+  input.addEventListener('input', () => {
+    target.textContent = transform ? transform(input.value) : input.value;
+  });
+}
+
+syncField('e-supra',      's-supra');
+syncField('e-badge',      's-badge');
+syncField('e-title',      's-title');
+syncField('e-duration',   's-duration');
+syncField('e-slidenum',   's-slidenum');
+syncField('e-objectif',   's-objectif');
+syncField('e-capture-legend', 's-capture-legend');
+
+// ─── Actions (liste) ───
+document.getElementById('e-actions').addEventListener('input', function() {
+  const lines = this.value.split('\n').slice(0, 5);
+  const ul = document.getElementById('s-actions');
+  ul.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    const li = document.createElement('li');
+    li.textContent = lines[i] || '';
+    ul.appendChild(li);
+  }
+});
+
+// ─── Livrables (liste) ───
+document.getElementById('e-livrables').addEventListener('input', function() {
+  const lines = this.value.split('\n').slice(0, 5);
+  const ul = document.getElementById('s-livrables');
+  ul.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    const li = document.createElement('li');
+    li.textContent = lines[i] || '';
+    ul.appendChild(li);
+  }
+});
+
+// ─── Prérequis (chips) ───
+document.getElementById('e-prereqs').addEventListener('input', function() {
+  const lines = this.value.split('\n').slice(0, 4);
+  const container = document.getElementById('s-prereqs');
+  container.innerHTML = '';
+  for (let i = 0; i < 4; i++) {
+    const div = document.createElement('div');
+    div.className = 'prereq-chip';
+    if (lines[i] && lines[i].trim()) {
+      div.innerHTML = '<span class="dot"></span><span>' + lines[i].trim() + '</span>';
+    }
+    container.appendChild(div);
+  }
+});
+
+// ─── Capture image ───
+document.getElementById('e-capture').addEventListener('change', function() {
+  const file = this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('capture-img');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.getElementById('capture-placeholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+});
+
+// ─── Timeline rendu ───
+function renderTimeline() {
+  const container = document.getElementById('s-timeline');
+  container.innerHTML = '';
+  phases.forEach((p, i) => {
+    const stop = document.createElement('div');
+    stop.className = 'tl-stop';
+    const dot = document.createElement('div');
+    dot.className = 'tl-dot ' + (p.status === 'done' ? 'done' : p.status === 'active' ? 'active' : '');
+    const name = document.createElement('div');
+    name.className = 'tl-name ' + (p.status === 'done' ? 'done' : p.status === 'active' ? 'active' : '');
+    name.textContent = p.name;
+    const dim = document.createElement('div');
+    dim.className = 'tl-dim ' + (p.status === 'active' ? 'active' : '');
+    dim.textContent = p.dim;
+    stop.appendChild(dot);
+    stop.appendChild(name);
+    stop.appendChild(dim);
+    container.appendChild(stop);
+    if (i < phases.length - 1) {
+      const seg = document.createElement('div');
+      seg.className = 'tl-segment';
+      const line = document.createElement('div');
+      line.className = 'tl-line ' + (p.status === 'done' ? 'done' : '');
+      seg.appendChild(line);
+      container.appendChild(seg);
+    }
+  });
+}
+
+// ─── Timeline éditeur ───
+function renderTLEditor() {
+  const container = document.getElementById('tl-editor');
+  container.innerHTML = '';
+  phases.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'tl-phase-editor';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'tl-phase-label';
+    lbl.textContent = 'Phase ' + (i + 1);
+    card.appendChild(lbl);
+
+    // Nom
+    const nameGroup = document.createElement('div');
+    nameGroup.className = 'field-group';
+    const nameLbl = document.createElement('div');
+    nameLbl.className = 'field-label';
+    nameLbl.textContent = 'Libellé';
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.value = p.name;
+    nameInput.addEventListener('input', () => { phases[i].name = nameInput.value; renderTimeline(); });
+    nameGroup.appendChild(nameLbl);
+    nameGroup.appendChild(nameInput);
+    card.appendChild(nameGroup);
+
+    // Dimensionnement
+    const dimGroup = document.createElement('div');
+    dimGroup.className = 'field-group';
+    const dimLbl = document.createElement('div');
+    dimLbl.className = 'field-label';
+    dimLbl.textContent = 'Dimensionnement';
+    const dimInput = document.createElement('input');
+    dimInput.type = 'text';
+    dimInput.value = p.dim;
+    dimInput.placeholder = 'ex. 5 jours';
+    dimInput.addEventListener('input', () => { phases[i].dim = dimInput.value; renderTimeline(); });
+    dimGroup.appendChild(dimLbl);
+    dimGroup.appendChild(dimInput);
+    card.appendChild(dimGroup);
+
+    // Statut
+    const radioGroup = document.createElement('div');
+    radioGroup.className = 'field-group';
+    const radioLbl = document.createElement('div');
+    radioLbl.className = 'field-label';
+    radioLbl.textContent = 'Statut';
+    const radios = document.createElement('div');
+    radios.className = 'radio-group';
+    ['done', 'active', 'inactive'].forEach(status => {
+      const lbl2 = document.createElement('label');
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'status-' + i;
+      radio.value = status;
+      radio.checked = p.status === status;
+      radio.addEventListener('change', () => { phases[i].status = status; renderTimeline(); });
+      lbl2.appendChild(radio);
+      lbl2.appendChild(document.createTextNode(' ' + (status === 'done' ? '✓ Fait' : status === 'active' ? '● Actif' : '○ À venir')));
+      radios.appendChild(lbl2);
+    });
+    radioGroup.appendChild(radioLbl);
+    radioGroup.appendChild(radios);
+    card.appendChild(radioGroup);
+
+    container.appendChild(card);
+  });
+}
+
+// ─── Export HTML ───
+function exportHTML() {
+  const img = document.getElementById('capture-img');
+  const imgSrc = img.style.display !== 'none' ? img.src : '';
+  const legend = document.getElementById('s-capture-legend').textContent;
+
+  const tlHTML = phases.map((p, i) => {
+    const dot = `<div class="tl-dot ${p.status === 'done' ? 'done' : p.status === 'active' ? 'active' : ''}"></div>`;
+    const name = `<div class="tl-name ${p.status === 'done' ? 'done' : p.status === 'active' ? 'active' : ''}">${p.name}</div>`;
+    const dim = `<div class="tl-dim ${p.status === 'active' ? 'active' : ''}">${p.dim}</div>`;
+    const stop = `<div class="tl-stop">${dot}${name}${dim}</div>`;
+    const seg = i < phases.length - 1 ? `<div class="tl-segment"><div class="tl-line ${p.status === 'done' ? 'done' : ''}"></div></div>` : '';
+    return stop + seg;
+  }).join('');
+
+  const prereqs = document.getElementById('s-prereqs').innerHTML;
+  const actions = document.getElementById('s-actions').innerHTML;
+  const livrables = document.getElementById('s-livrables').innerHTML;
+
+  const html = `<!-- Diapo phase exportée depuis l'éditeur Seequalis -->
+<div style="width:960px;font-family:'Segoe UI',Arial,sans-serif;background:#fff;position:relative;overflow:hidden;">
+  <div style="position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(to bottom,#FF6700 50%,#270026 50%);"></div>
+  <div style="display:flex;align-items:center;padding:8px 0 4px 22px;">
+    <div style="width:22px;height:3px;background:#270026;"></div><div style="width:22px;height:3px;background:#FF6700;"></div>
+    <span style="font-size:10px;font-weight:700;color:#FF6700;text-transform:uppercase;letter-spacing:0.1em;margin-left:8px;">${document.getElementById('s-supra').textContent}</span>
+  </div>
+  <div style="background:#270026;padding:12px 24px 10px 22px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div style="background:#FF6700;color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:2px;text-transform:uppercase;">${document.getElementById('s-badge').textContent}</div>
+      <div style="color:#fff;font-size:20px;font-weight:700;">${document.getElementById('s-title').textContent}</div>
+    </div>
+    <div style="color:#FF6700;font-size:13px;font-weight:600;">${document.getElementById('s-duration').textContent}</div>
+  </div>
+  <!-- Corps + capture + timeline : copier le HTML du slide ou réintégrer dans PowerPoint via la méthode XML -->
+</div>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'slide_phase_' + (document.getElementById('e-badge').value.replace(/[^a-z0-9]/gi, '_')) + '.html';
+  a.click();
+}
+
+// ─── INIT ───
+renderTimeline();
+renderTLEditor();
+</script>
+</body>
+</html>
