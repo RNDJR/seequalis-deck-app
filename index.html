@@ -744,96 +744,109 @@
       });
   }
 
-  function render() {
-    const grid  = document.getElementById('sq-slides-grid');
-    const count = document.getElementById('sq-slide-count');
-    const meta  = document.getElementById('sq-canvas-meta');
-    const btnPdf  = document.getElementById('sq-btn-pdf');
-    const btnSave = document.getElementById('sq-btn-save');
+function render() {
+  const grid  = document.getElementById('sq-slides-grid');
+  const count = document.getElementById('sq-slide-count');
+  const meta  = document.getElementById('sq-canvas-meta');
+  const btnPdf  = document.getElementById('sq-btn-pdf');
+  const btnSave = document.getElementById('sq-btn-save');
 
-    count.textContent = deck.length;
-    btnPdf.disabled  = deck.length === 0;
-    btnSave.disabled = deck.length === 0;
+  count.textContent = deck.length;
+  btnPdf.disabled  = deck.length === 0;
+  btnSave.disabled = deck.length === 0;
 
-    meta.textContent = deck.length > 0
-      ? deck.length + ' slide' + (deck.length > 1 ? 's' : '')
-      : '';
+  meta.textContent = deck.length > 0
+    ? deck.length + ' slide' + (deck.length > 1 ? 's' : '')
+    : '';
 
-    if (deck.length === 0) {
-      grid.innerHTML = `
-        <div class="sq-empty-state">
-          <div class="sq-empty-icon">🗂</div>
-          <div class="sq-empty-text">Aucun slide dans le deck.<br>Cliquez sur un template à gauche pour commencer.</div>
+  if (deck.length === 0) {
+    grid.innerHTML = `
+      <div class="sq-empty-state">
+        <div class="sq-empty-icon">🗂</div>
+        <div class="sq-empty-text">
+          Aucun slide dans le deck.<br>
+          Cliquez sur un template à gauche pour commencer.
         </div>
-      `;
-      return;
-    }
-
-    grid.innerHTML = '';
-
-    deck.forEach((slide, idx) => {
-      const card = document.createElement('div');
-      card.className = 'sq-slide-card';
-      card.draggable = true;
-      card.dataset.idx = idx;
-
-      card.innerHTML = `
-        <img class="sq-slide-thumb" src="${slide.img}" alt="${slide.title}">
-        <div class="sq-slide-footer">
-          <div class="sq-slide-info">
-            <span class="sq-slide-idx">${String(idx + 1).padStart(2, '0')}</span>
-            <span class="sq-slide-name">${slide.title}</span>
-          </div>
-          <div class="sq-slide-actions">
-            <button class="sq-icon-btn" title="Monter">↑</button>
-            <button class="sq-icon-btn" title="Descendre">↓</button>
-            <button class="sq-icon-btn danger" title="Supprimer">✕</button>
-          </div>
-        </div>
-      `;
-
-      const [upBtn, downBtn, delBtn] = card.querySelectorAll('.sq-icon-btn');
-
-      upBtn.addEventListener('click', () => moveSlide(idx, -1));
-      downBtn.addEventListener('click', () => moveSlide(idx, 1));
-      delBtn.addEventListener('click', () => removeSlide(idx));
-
-      card.addEventListener('dragstart', e => {
-        dragSrcIdx = idx;
-        card.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-      });
-
-      card.addEventListener('dragend', () => {
-        card.classList.remove('dragging');
-        document.querySelectorAll('.drag-target').forEach(el => el.classList.remove('drag-target'));
-      });
-
-      card.addEventListener('dragover', e => {
-        e.preventDefault();
-        card.classList.add('drag-target');
-      });
-
-      card.addEventListener('dragleave', () => {
-        card.classList.remove('drag-target');
-      });
-
-      card.addEventListener('drop', e => {
-        e.preventDefault();
-        card.classList.remove('drag-target');
-
-        if (dragSrcIdx === null || dragSrcIdx === idx) return;
-
-        const moved = deck.splice(dragSrcIdx, 1)[0];
-        deck.splice(idx, 0, moved);
-
-        dragSrcIdx = null;
-        render();
-      });
-
-      grid.appendChild(card);
-    });
+      </div>
+    `;
+    return;
   }
+
+  grid.innerHTML = '';
+
+  deck.forEach((slide, idx) => {
+    const card = document.createElement('div');
+    card.className = 'sq-slide-card';
+    card.draggable = true;
+
+    card.innerHTML = `
+      <img class="sq-slide-thumb" src="${slide.img}" alt="${slide.title}">
+      <div class="sq-slide-footer">
+        <div class="sq-slide-info">
+          <span class="sq-slide-idx">${String(idx + 1).padStart(2, '0')}</span>
+          <span class="sq-slide-name">${slide.title}</span>
+        </div>
+        <div class="sq-slide-actions">
+          <button class="sq-icon-btn" title="Monter">↑</button>
+          <button class="sq-icon-btn" title="Descendre">↓</button>
+          <button class="sq-icon-btn danger" title="Supprimer">✕</button>
+        </div>
+      </div>
+    `;
+
+    const [upBtn, downBtn, delBtn] = card.querySelectorAll('.sq-icon-btn');
+
+    upBtn.addEventListener('click', () => moveSlide(idx, -1));
+    downBtn.addEventListener('click', () => moveSlide(idx, 1));
+    delBtn.addEventListener('click', () => removeSlide(idx));
+
+    // ✅ DRAG START
+    card.addEventListener('dragstart', e => {
+      e.dataTransfer.setData("text/plain", idx);
+      e.dataTransfer.effectAllowed = 'move';
+      card.classList.add('dragging');
+    });
+
+    // ✅ DRAG END
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      document.querySelectorAll('.drag-target')
+        .forEach(el => el.classList.remove('drag-target'));
+    });
+
+    // ✅ DRAG OVER
+    card.addEventListener('dragover', e => {
+      e.preventDefault();
+      const sourceIdx = parseInt(e.dataTransfer.getData("text/plain"));
+      if (sourceIdx !== idx) {
+        card.classList.add('drag-target');
+      }
+    });
+
+    // ✅ LEAVE
+    card.addEventListener('dragleave', () => {
+      card.classList.remove('drag-target');
+    });
+
+    // ✅ DROP
+    card.addEventListener('drop', e => {
+      e.preventDefault();
+      card.classList.remove('drag-target');
+
+      const sourceIdx = parseInt(e.dataTransfer.getData("text/plain"));
+      const targetIdx = idx;
+
+      if (isNaN(sourceIdx) || sourceIdx === targetIdx) return;
+
+      const moved = deck.splice(sourceIdx, 1)[0];
+      deck.splice(targetIdx, 0, moved);
+
+      render();
+    });
+
+    grid.appendChild(card);
+  });
+}
 
   function moveSlide(idx, dir) {
     const newIdx = idx + dir;
