@@ -32,7 +32,6 @@
 
   #sq-deck-app * { box-sizing: border-box; }
 
-  /* ── HEADER APP ── */
   .sq-header {
     background: var(--aub);
     border-radius: 8px 8px 0 0;
@@ -44,11 +43,29 @@
     gap: 10px;
   }
 
-  .sq-header-left { display: flex; align-items: center; gap: 12px; }
+  .sq-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
 
-  .sq-logo-bar { display: flex; gap: 0; }
-  .sq-logo-seg1 { width: 16px; height: 3px; background: var(--aub); border: 1px solid rgba(255,255,255,0.3); }
-  .sq-logo-seg2 { width: 16px; height: 3px; background: var(--org); }
+  .sq-logo-bar {
+    display: flex;
+    gap: 0;
+  }
+
+  .sq-logo-seg1 {
+    width: 16px;
+    height: 3px;
+    background: var(--aub);
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+
+  .sq-logo-seg2 {
+    width: 16px;
+    height: 3px;
+    background: var(--org);
+  }
 
   .sq-title {
     font-family: 'Courier New', monospace;
@@ -59,11 +76,15 @@
     color: rgba(255,255,255,0.75);
   }
 
-  .sq-title strong { color: var(--org); }
+  .sq-title strong {
+    color: var(--org);
+  }
 
-  .sq-header-actions { display: flex; gap: 8px; }
+  .sq-header-actions {
+    display: flex;
+    gap: 8px;
+  }
 
-  /* ── LAYOUT ── */
   .sq-main {
     display: grid;
     grid-template-columns: 320px 1fr;
@@ -74,7 +95,6 @@
     overflow: hidden;
   }
 
-  /* ── SIDEBAR ── */
   .sq-sidebar {
     background: var(--panel);
     border-right: 1px solid var(--border);
@@ -97,8 +117,11 @@
     border-bottom: 1px solid var(--border);
   }
 
-  /* Galerie de templates */
-  .sq-template-list { display: flex; flex-direction: column; gap: 8px; }
+  .sq-template-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
 
   .sq-template-card {
     background: var(--panel2);
@@ -112,15 +135,25 @@
     transition: border-color 0.15s, background 0.15s;
   }
 
-  .sq-template-card:hover { border-color: var(--org); background: rgba(255,103,0,0.06); }
-  .sq-template-card.loading { opacity: 0.5; pointer-events: none; }
+  .sq-template-card:hover {
+    border-color: var(--org);
+    background: rgba(255,103,0,0.06);
+  }
+
+  .sq-template-card.loading {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 
   .sq-template-icon {
-    width: 30px; height: 30px;
+    width: 30px;
+    height: 30px;
     border-radius: 5px;
     background: var(--aub);
     color: var(--org);
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 13px;
     font-weight: 700;
     flex-shrink: 0;
@@ -150,7 +183,6 @@
     line-height: 1.6;
   }
 
-  /* Stat deck */
   .sq-deck-stat {
     display: flex;
     justify-content: space-between;
@@ -176,7 +208,6 @@
     font-family: 'Courier New', monospace;
   }
 
-  /* Boutons */
   .sq-btn {
     display: inline-flex;
     align-items: center;
@@ -195,14 +226,45 @@
     text-transform: uppercase;
   }
 
-  .sq-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .sq-btn-primary { background: var(--org); color: #fff; }
-  .sq-btn-primary:hover:not(:disabled) { background: #e05500; }
-  .sq-btn-teal { background: var(--teal); color: #fff; }
-  .sq-btn-teal:hover:not(:disabled) { background: #155258; }
-  .sq-btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-  .sq-btn-ghost:hover:not(:disabled) { border-color: var(--org); color: #fff; }
-  .sq-btn-sm { width: auto; padding: 7px 14px; font-size: 11px; }
+  .sq-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .sq-btn-primary {
+    background: var(--org);
+    color: #fff;
+  }
+
+  .sq-btn-primary:hover:not(:disabled) {
+    background: #e05500;
+  }
+
+  .sq-btn-teal {
+    background: var(--teal);
+    color: #fff;
+  }
+
+  .sq-btn-teal:hover:not(:disabled) {
+    background: #155258;
+  }
+
+  .sq-btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .sq-btn-ghost:hover:not(:disabled) {
+    border-color: var(--org);
+    color: #fff;
+  }
+
+  .sq-btn-sm {
+    width: auto;
+    padding: 7px 14px;
+    font-size: 11px;
+  }
 
   .sq-hint {
     font-size: 10.5px;
@@ -210,7 +272,6 @@
     line-height: 1.6;
   }
 
-  /* ── CANVAS ── */
   .sq-canvas {
     padding: 22px;
     overflow-y: auto;
@@ -255,9 +316,19 @@
     user-select: none;
   }
 
-  .sq-slide-card:hover { border-color: rgba(255,103,0,0.4); box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
-  .sq-slide-card.dragging { opacity: 0.4; }
-  .sq-slide-card.drag-target { border-color: var(--org); border-style: dashed; }
+  .sq-slide-card:hover {
+    border-color: rgba(255,103,0,0.4);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+
+  .sq-slide-card.dragging {
+    opacity: 0.4;
+  }
+
+  .sq-slide-card.drag-target {
+    border-color: var(--org);
+    border-style: dashed;
+  }
 
   .sq-slide-thumb {
     width: 100%;
@@ -275,7 +346,12 @@
     gap: 6px;
   }
 
-  .sq-slide-info { display: flex; align-items: center; gap: 7px; min-width: 0; }
+  .sq-slide-info {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+  }
 
   .sq-slide-idx {
     background: var(--aub);
@@ -296,23 +372,37 @@
     text-overflow: ellipsis;
   }
 
-  .sq-slide-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .sq-slide-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
 
   .sq-icon-btn {
     background: none;
     border: 1px solid var(--border);
     color: var(--muted);
     border-radius: 4px;
-    width: 22px; height: 22px;
-    display: flex; align-items: center; justify-content: center;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 11px;
     cursor: pointer;
     transition: all 0.15s;
     flex-shrink: 0;
   }
 
-  .sq-icon-btn:hover { border-color: var(--org); color: var(--org); }
-  .sq-icon-btn.danger:hover { border-color: #ff6b6b; color: #ff6b6b; }
+  .sq-icon-btn:hover {
+    border-color: var(--org);
+    color: var(--org);
+  }
+
+  .sq-icon-btn.danger:hover {
+    border-color: #ff6b6b;
+    color: #ff6b6b;
+  }
 
   .sq-empty-state {
     grid-column: 1 / -1;
@@ -321,13 +411,21 @@
     color: var(--muted);
   }
 
-  .sq-empty-icon { font-size: 40px; margin-bottom: 14px; opacity: 0.4; }
-  .sq-empty-text { font-size: 12.5px; line-height: 1.6; }
+  .sq-empty-icon {
+    font-size: 40px;
+    margin-bottom: 14px;
+    opacity: 0.4;
+  }
 
-  /* Toast */
+  .sq-empty-text {
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+
   .sq-toast {
     position: fixed;
-    bottom: 22px; right: 22px;
+    bottom: 22px;
+    right: 22px;
     background: var(--aub);
     border: 1px solid var(--org);
     color: #fff;
@@ -343,9 +441,11 @@
     max-width: 320px;
   }
 
-  .sq-toast.show { opacity: 1; transform: translateY(0); }
+  .sq-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
-  /* Overlay progress */
   .sq-overlay {
     position: fixed;
     inset: 0;
@@ -356,7 +456,9 @@
     z-index: 99998;
   }
 
-  .sq-overlay.active { display: flex; }
+  .sq-overlay.active {
+    display: flex;
+  }
 
   .sq-overlay-box {
     background: var(--panel);
@@ -397,7 +499,6 @@
     font-family: 'Courier New', monospace;
   }
 
-  /* Modal nom de fichier */
   .sq-modal-box input[type="text"] {
     width: 100%;
     background: var(--panel2);
@@ -410,8 +511,15 @@
     outline: none;
   }
 
-  .sq-modal-box input[type="text"]:focus { border-color: var(--org); }
-  .sq-modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .sq-modal-box input[type="text"]:focus {
+    border-color: var(--org);
+  }
+
+  .sq-modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
 </style>
 </head>
 
@@ -435,7 +543,6 @@
   </div>
 
   <div class="sq-main">
-    <!-- SIDEBAR -->
     <div class="sq-sidebar">
       <div>
         <div class="sq-sidebar-title">Templates disponibles</div>
@@ -454,7 +561,6 @@
       </div>
     </div>
 
-    <!-- CANVAS -->
     <div class="sq-canvas">
       <div class="sq-canvas-header">
         <div class="sq-canvas-title">Ordre des slides</div>
@@ -471,7 +577,6 @@
   </div>
 </div>
 
-<!-- Overlay progress -->
 <div class="sq-overlay" id="sq-overlay">
   <div class="sq-overlay-box">
     <div class="sq-overlay-title" id="sq-overlay-title">Traitement en cours…</div>
@@ -482,7 +587,6 @@
   </div>
 </div>
 
-<!-- Modal nom fichier -->
 <div class="sq-overlay" id="sq-modal-save">
   <div class="sq-overlay-box sq-modal-box">
     <div class="sq-overlay-title">Nom du fichier à télécharger</div>
@@ -501,11 +605,6 @@
 (function() {
   'use strict';
 
-  // ════════════════════════════════════════════
-  // CONFIGURATION — GitHub Pages
-  // ════════════════════════════════════════════
-  // Ces chemins doivent correspondre exactement aux fichiers présents
-  // dans le dossier /templates de ton repository GitHub.
   const TEMPLATE_FILES = [
     {
       label: 'Business Case',
@@ -529,16 +628,10 @@
     }
   ];
 
-  // ════════════════════════════════════════════
-  // ÉTAT
-  // ════════════════════════════════════════════
   let deck = [];
   let dragSrcIdx = null;
   let lastPdfBlob = null;
 
-  // ════════════════════════════════════════════
-  // CHARGER LA LISTE DES TEMPLATES
-  // ════════════════════════════════════════════
   function loadTemplates() {
     renderTemplateList(TEMPLATE_FILES);
   }
@@ -571,9 +664,6 @@
     });
   }
 
-  // ════════════════════════════════════════════
-  // AJOUTER UN TEMPLATE AU DECK
-  // ════════════════════════════════════════════
   function addTemplateToDeck(fileRef, label, cardEl) {
     cardEl.classList.add('loading');
 
@@ -589,10 +679,9 @@
           'position:fixed',
           'left:-9999px',
           'top:0',
-          'width:1040px',
-          'height:720px',
+          'width:1400px',
+          'height:1000px',
           'border:none',
-          'opacity:0',
           'pointer-events:none',
           'z-index:-1'
         ].join(';');
@@ -601,7 +690,7 @@
 
         return new Promise(resolve => {
           iframe.onload = () => {
-            setTimeout(() => resolve(iframe), 1100);
+            setTimeout(() => resolve(iframe), 1200);
           };
 
           iframe.srcdoc = html;
@@ -620,10 +709,10 @@
           scale: 2,
           useCORS: true,
           backgroundColor: '#ffffff',
-          windowWidth: 1040,
-          windowHeight: 720
+          windowWidth: 1400,
+          windowHeight: 1000
         }).then(canvas => {
-          const imgData = canvas.toDataURL('image/jpeg', 0.88);
+          const imgData = canvas.toDataURL('image/jpeg', 0.92);
 
           const titleEl =
             iframe.contentDocument.getElementById('s-title') ||
@@ -636,7 +725,9 @@
           deck.push({
             id: Date.now() + Math.random(),
             title,
-            img: imgData
+            img: imgData,
+            width: canvas.width,
+            height: canvas.height
           });
 
           iframe.remove();
@@ -653,9 +744,6 @@
       });
   }
 
-  // ════════════════════════════════════════════
-  // RENDER DECK CANVAS
-  // ════════════════════════════════════════════
   function render() {
     const grid  = document.getElementById('sq-slides-grid');
     const count = document.getElementById('sq-slide-count');
@@ -774,56 +862,44 @@
     toast('Deck vidé');
   };
 
-  // ════════════════════════════════════════════
-  // GÉNÉRATION PDF
-  // ════════════════════════════════════════════
   async function buildPdfBlob() {
+    if (deck.length === 0) return null;
+
     const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1040, 600] }); // taille exacte de tes slides
-    
-    const PW = 297;
-    const PH = 210;
 
     const fill  = document.getElementById('sq-progress-fill');
     const label = document.getElementById('sq-progress-label');
 
+    const first = deck[0];
+    const firstOrientation = first.width >= first.height ? 'landscape' : 'portrait';
+
+    const pdf = new jsPDF({
+      orientation: firstOrientation,
+      unit: 'px',
+      format: [first.width, first.height]
+    });
+
     for (let i = 0; i < deck.length; i++) {
       const slide = deck[i];
 
-      const pct = Math.round((i / deck.length) * 100);
+      const pct = Math.round(((i + 1) / deck.length) * 100);
       fill.style.width = pct + '%';
       label.textContent = 'Slide ' + (i + 1) + ' / ' + deck.length + ' — ' + slide.title;
 
-      if (i > 0) pdf.addPage('a4', 'landscape');
+      const orientation = slide.width >= slide.height ? 'landscape' : 'portrait';
 
-      const img = new Image();
-      img.src = slide.img;
-
-      await new Promise(resolve => {
-        img.onload = resolve;
-      });
-
-      const imgRatio = img.width / img.height;
-      const pageRatio = PW / PH;
-
-      let drawW;
-      let drawH;
-      let drawX;
-      let drawY;
-
-      if (imgRatio > pageRatio) {
-        drawW = PW;
-        drawH = PW / imgRatio;
-        drawX = 0;
-        drawY = (PH - drawH) / 2;
-      } else {
-        drawH = PH;
-        drawW = PH * imgRatio;
-        drawX = (PW - drawW) / 2;
-        drawY = 0;
+      if (i > 0) {
+        pdf.addPage([slide.width, slide.height], orientation);
       }
 
-      pdf.addImage(slide.img, 'JPEG', 0, 0, 1040, 600);
+      pdf.addImage(
+        slide.img,
+        'JPEG',
+        0,
+        0,
+        slide.width,
+        slide.height
+      );
     }
 
     fill.style.width = '100%';
@@ -866,9 +942,6 @@
     }
   };
 
-  // ════════════════════════════════════════════
-  // MODAL NOM DE FICHIER + TÉLÉCHARGEMENT LOCAL
-  // ════════════════════════════════════════════
   window.sqOpenSaveModal = function() {
     if (deck.length === 0) return;
 
@@ -924,9 +997,6 @@
     }
   };
 
-  // ════════════════════════════════════════════
-  // TOAST
-  // ════════════════════════════════════════════
   let toastTimer;
 
   function toast(msg, isError) {
@@ -943,9 +1013,6 @@
     }, 3200);
   }
 
-  // ════════════════════════════════════════════
-  // INIT
-  // ════════════════════════════════════════════
   loadTemplates();
   render();
 
